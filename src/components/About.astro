@@ -16,7 +16,7 @@ const bioWords = bioText.split(' ');
     </figure>
 
     <div class="about-copy" data-reveal>
-      <p class="section-kicker">Dr. Eduardo Ferreira</p>
+      <p class="section-kicker spotlight-text">Dr. Eduardo Ferreira</p>
       <p class="about-bio" data-scroll-text aria-label={bioText}>
         {bioWords.map((word, index) => (
           <span class="reveal-word" aria-hidden="true">{word}{index < bioWords.length - 1 ? ' ' : ''}</span>

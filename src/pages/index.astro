@@ -27,8 +27,9 @@ import Footer from '@/components/Footer.astro';
   <script>
     import { gsap } from 'gsap';
     import { SplitText } from 'gsap/SplitText';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-    gsap.registerPlugin(SplitText);
+    gsap.registerPlugin(SplitText, ScrollTrigger);
 
     const header = document.querySelector<HTMLElement>('[data-header]');
     const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
@@ -145,6 +146,35 @@ import Footer from '@/components/Footer.astro';
       gsap.set([heroHeadline, heroDescription], { visibility: 'visible' });
     }
 
+    const spotlightElements = [...document.querySelectorAll<HTMLElement>('.spotlight-text')];
+
+    if (reduceMotion) {
+      gsap.set(spotlightElements, { visibility: 'visible' });
+    } else {
+      spotlightElements.forEach((element) => {
+        const split = SplitText.create(element, {
+          type: 'chars',
+          charsClass: 'spotlight-char',
+          aria: 'auto',
+        });
+
+        gsap.set(element, { visibility: 'visible' });
+        gsap.from(split.chars, {
+          opacity: .1,
+          scale: .8,
+          filter: 'blur(4px)',
+          stagger: { each: .03, from: 'center' },
+          duration: .4,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: element,
+            start: 'top 88%',
+            once: true,
+          },
+        });
+      });
+    }
+
     const faqItems = [...document.querySelectorAll<HTMLDetailsElement>('[data-faq-list] details')];
     let faqIsTransitioning = false;
 
@@ -215,6 +245,7 @@ import Footer from '@/components/Footer.astro';
     document.querySelectorAll<HTMLElement>('[data-differentials-slider]').forEach((slider) => {
       const tabs = [...slider.querySelectorAll<HTMLButtonElement>('[data-difference-tab]')];
       const slides = [...slider.querySelectorAll<HTMLElement>('[data-difference-slide]')];
+      const stage = slider.querySelector<HTMLElement>('.difference-stage');
       let activeIndex = Math.max(0, tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true'));
       let transitionVersion = 0;
 
@@ -239,11 +270,22 @@ import Footer from '@/components/Footer.astro';
         const direction = index > previousIndex ? 1 : -1;
         const version = ++transitionVersion;
         activeIndex = index;
+        let currentStageHeight = 0;
+
+        if (stage) {
+          gsap.killTweensOf(stage);
+          currentStageHeight = stage.getBoundingClientRect().height;
+        }
 
         slides.forEach((slide, slideIndex) => {
           slide.getAnimations().forEach((animation) => animation.cancel());
-          slide.querySelectorAll<HTMLElement>('[data-motion-item]').forEach((item) => {
+          const motionItems = [...slide.querySelectorAll<HTMLElement>('[data-motion-item]')];
+          motionItems.forEach((item) => {
             item.getAnimations().forEach((animation) => animation.cancel());
+          });
+          gsap.killTweensOf([slide, ...motionItems]);
+          gsap.set([slide, ...motionItems], {
+            clearProps: 'opacity,visibility,transform,filter,boxShadow,transformOrigin',
           });
           slide.classList.toggle('is-active', slideIndex === index);
           slide.style.removeProperty('z-index');
@@ -253,49 +295,141 @@ import Footer from '@/components/Footer.astro';
 
         incoming.hidden = false;
 
+        let targetStageHeight = currentStageHeight;
+        if (stage) {
+          // Measure the next card at its natural height before animating the container.
+          outgoing.hidden = true;
+          stage.style.removeProperty('height');
+          targetStageHeight = stage.getBoundingClientRect().height;
+          outgoing.hidden = false;
+          stage.style.height = `${currentStageHeight}px`;
+          stage.style.overflow = 'hidden';
+          stage.style.willChange = 'height';
+        }
+
         if (reduceMotion) {
           outgoing.hidden = true;
+          if (stage) {
+            stage.style.removeProperty('height');
+            stage.style.removeProperty('overflow');
+            stage.style.removeProperty('will-change');
+          }
           return;
+        }
+
+        if (stage) {
+          gsap.to(stage, {
+            height: targetStageHeight,
+            duration: 0.5,
+            ease: 'power2.inOut',
+            overwrite: true,
+            onComplete: () => {
+              if (version !== transitionVersion) return;
+              stage.style.removeProperty('height');
+              stage.style.removeProperty('overflow');
+              stage.style.removeProperty('will-change');
+            },
+          });
         }
 
         outgoing.style.zIndex = '1';
         outgoing.style.pointerEvents = 'none';
         incoming.style.zIndex = '2';
 
-        const outgoingAnimation = outgoing.animate([
-          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-          { opacity: 0, transform: `translate3d(${-direction * 10}px, 0, 0)` },
-        ], { duration: 220, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both' });
-
-        const incomingAnimation = incoming.animate([
-          { opacity: 0, transform: `translate3d(${direction * 14}px, 0, 0)` },
-          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-        ], { duration: 360, delay: 35, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' });
-
-        const itemAnimations = [...incoming.querySelectorAll<HTMLElement>('[data-motion-item]')].map((item, itemIndex) => item.animate([
-          { opacity: 0, transform: 'translate3d(0, 6px, 0)' },
-          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-        ], {
-          duration: 280,
-          delay: 85 + itemIndex * 34,
-          easing: 'cubic-bezier(.22,1,.36,1)',
-          fill: 'both',
-        }));
-
-        Promise.allSettled([
-          outgoingAnimation.finished,
-          incomingAnimation.finished,
-          ...itemAnimations.map((animation) => animation.finished),
-        ]).then(() => {
-          if (version !== transitionVersion) return;
-          outgoing.hidden = true;
-          outgoing.style.removeProperty('z-index');
-          outgoing.style.removeProperty('pointer-events');
-          incoming.style.removeProperty('z-index');
-          outgoingAnimation.cancel();
-          incomingAnimation.cancel();
-          itemAnimations.forEach((animation) => animation.cancel());
+        const featureMark = incoming.querySelector<HTMLElement>('.feature-mark');
+        const cardTitle = incoming.querySelector<HTMLElement>('h3');
+        const cardDescription = incoming.querySelector<HTMLElement>('p');
+        const cardCta = incoming.querySelector<HTMLElement>('.card-cta');
+        const cardTimeline = gsap.timeline({
+          onComplete: () => {
+            if (version !== transitionVersion) return;
+            outgoing.hidden = true;
+            outgoing.style.removeProperty('z-index');
+            outgoing.style.removeProperty('pointer-events');
+            incoming.style.removeProperty('z-index');
+            gsap.set([outgoing, incoming, featureMark, cardTitle, cardDescription, cardCta].filter(Boolean), {
+              clearProps: 'opacity,visibility,transform,filter,boxShadow,transformOrigin',
+            });
+          },
         });
+
+        cardTimeline
+          .set(incoming, {
+            autoAlpha: 0,
+            x: direction * 22,
+            y: 8,
+            scale: 0.985,
+            filter: 'blur(5px)',
+            boxShadow: '0 10px 26px rgba(49, 92, 255, 0.1)',
+            transformOrigin: '50% 50%',
+          }, 0)
+          .to(outgoing, {
+            autoAlpha: 0,
+            x: -direction * 10,
+            y: -3,
+            scale: 0.992,
+            filter: 'blur(2px)',
+            boxShadow: '0 10px 28px rgba(49, 92, 255, 0.12)',
+            duration: 0.26,
+            ease: 'power2.in',
+          }, 0)
+          .to(incoming, {
+            autoAlpha: 1,
+            x: 0,
+            y: 0,
+            scale: 1,
+            filter: 'blur(0px)',
+            boxShadow: '0 20px 45px rgba(49, 92, 255, 0.2)',
+            duration: 0.6,
+            ease: 'expo.out',
+          }, 0.08)
+          .call(() => {
+            if (version === transitionVersion) outgoing.hidden = true;
+          }, [], 0.28);
+
+        if (featureMark) {
+          cardTimeline.fromTo(featureMark,
+            { autoAlpha: 0, y: 9, scale: 0.9 },
+            { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.35)' },
+            0.18,
+          );
+        }
+
+        if (cardTitle) {
+          cardTimeline.fromTo(cardTitle,
+            { autoAlpha: 0, y: 16, filter: 'blur(5px)' },
+            {
+              autoAlpha: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 0.5,
+              ease: 'power3.out',
+            },
+            0.22,
+          );
+        }
+
+        if (cardDescription) {
+          cardTimeline.fromTo(cardDescription,
+            { autoAlpha: 0, y: 10, filter: 'blur(4px)' },
+            {
+              autoAlpha: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 0.44,
+              ease: 'power2.out',
+            },
+            0.31,
+          );
+        }
+
+        if (cardCta) {
+          cardTimeline.fromTo(cardCta,
+            { autoAlpha: 0, y: 8 },
+            { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+            0.4,
+          );
+        }
       };
 
       tabs.forEach((tab, index) => {
@@ -359,3 +493,9 @@ import Footer from '@/components/Footer.astro';
     document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
   </script>
 </BaseLayout>
+
+<noscript>
+  <style>
+    .spotlight-text { visibility: visible !important; }
+  </style>
+</noscript>

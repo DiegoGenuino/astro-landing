@@ -18,14 +18,14 @@ const description = 'Defesa em todas as fases — inquérito, ação penal e rec
 <section class="section practices" id="especialidades">
   <div class="container">
     <div class="section-heading" data-reveal>
-      <h2>Crimes que defendemos<br />com <span>excelência</span></h2>
-      <p>Atuação técnica e especializada nas práticas mais complexas do Direito Penal Econômico. Cada área com histórico sólido de resultados.</p>
+      <h2 class="spotlight-text">Crimes que defendemos<br />com <span>excelência</span></h2>
+      <p class="spotlight-text">Atuação técnica e especializada nas práticas mais complexas do Direito Penal Econômico. Cada área com histórico sólido de resultados.</p>
     </div>
     <div class="practice-grid">
       {practices.map(([icon, title]) => (
         <article class="practice-card" data-reveal>
           <span class="practice-icon" aria-hidden="true"><Icon name={icon} /></span>
-          <h3>{title}</h3>
+          <h3 class="spotlight-text">{title}</h3>
           <p>{description}</p>
         </article>
       ))}
