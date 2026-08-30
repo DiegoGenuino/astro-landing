@@ -25,6 +25,11 @@ import Footer from '@/components/Footer.astro';
   <Footer />
 
   <script>
+    import { gsap } from 'gsap';
+    import { SplitText } from 'gsap/SplitText';
+
+    gsap.registerPlugin(SplitText);
+
     const header = document.querySelector<HTMLElement>('[data-header]');
     const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
     const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
@@ -86,6 +91,61 @@ import Footer from '@/components/Footer.astro';
     });
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const heroHeadline = document.querySelector<HTMLElement>('[data-hero-headline]');
+    const heroDescription = document.querySelector<HTMLElement>('[data-hero-description]');
+
+    if (heroHeadline && heroDescription && !reduceMotion) {
+      document.documentElement.classList.add('has-gsap-hero');
+
+      const initializeHeroText = () => {
+        SplitText.create(heroHeadline, {
+          type: 'words,chars',
+          mask: 'chars',
+          charsClass: 'hero-char',
+          wordsClass: 'hero-word',
+          aria: 'auto',
+          onSplit(self) {
+            gsap.set(heroHeadline, { visibility: 'visible' });
+            return gsap.from(self.chars, {
+              yPercent: 108,
+              autoAlpha: 0,
+              filter: 'blur(8px)',
+              rotationX: -24,
+              transformOrigin: '50% 100%',
+              duration: .78,
+              delay: .12,
+              stagger: { each: .016, from: 'start' },
+              ease: 'power4.out',
+            });
+          },
+        });
+
+        SplitText.create(heroDescription, {
+          type: 'lines',
+          mask: 'lines',
+          linesClass: 'hero-line',
+          autoSplit: true,
+          aria: 'auto',
+          onSplit(self) {
+            gsap.set(heroDescription, { visibility: 'visible' });
+            return gsap.from(self.lines, {
+              yPercent: 105,
+              autoAlpha: 0,
+              filter: 'blur(6px)',
+              duration: .72,
+              delay: 1.02,
+              stagger: .11,
+              ease: 'power3.out',
+            });
+          },
+        });
+      };
+
+      initializeHeroText();
+    } else {
+      gsap.set([heroHeadline, heroDescription], { visibility: 'visible' });
+    }
 
     const faqItems = [...document.querySelectorAll<HTMLDetailsElement>('[data-faq-list] details')];
     let faqIsTransitioning = false;

@@ -92,6 +92,8 @@ svg.cta-arrow-icon { width: 11px !important; height: 11px !important; }
 .hero h1 { max-width: 650px; margin-bottom: 14px; font-size: var(--font-hero); font-weight: 500; line-height: 1.22; letter-spacing: -.02em; }
 .hero h1 em { color: var(--blue); font-style: normal; font-weight: 600; }
 .hero-lead { max-width: 580px; margin-bottom: 18px; color: #d8dae1; font-size: var(--font-body); line-height: 1.6; }
+.has-gsap-hero [data-hero-headline], .has-gsap-hero [data-hero-description] { visibility: hidden; }
+.hero-char, .hero-line { will-change: transform, opacity, filter; }
 .hero-actions { display: flex; align-items: center; gap: 26px; }
 .hero-actions svg, .floating-whatsapp svg { width: 20px; height: 20px; }
 .text-link { display: inline-flex; gap: 9px; color: #d5d7dd; font-size: var(--font-ui); }
