@@ -158,8 +158,9 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
     } else {
       spotlightElements.forEach((element) => {
         const split = SplitText.create(element, {
-          type: 'chars',
+          type: 'words,chars',
           charsClass: 'spotlight-char',
+          wordsClass: 'spotlight-word',
           aria: 'auto',
         });
 

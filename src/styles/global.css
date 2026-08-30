@@ -421,6 +421,10 @@ svg.cta-arrow-icon {
   display: inline-block;
   will-change: transform, opacity, filter;
 }
+.spotlight-word {
+  display: inline-block;
+  white-space: nowrap;
+}
 .hero-actions {
   display: flex;
   align-items: center;
