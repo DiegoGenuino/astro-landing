@@ -96,8 +96,6 @@ import Footer from '@/components/Footer.astro';
     const heroDescription = document.querySelector<HTMLElement>('[data-hero-description]');
 
     if (heroHeadline && heroDescription && !reduceMotion) {
-      document.documentElement.classList.add('has-gsap-hero');
-
       const initializeHeroText = () => {
         SplitText.create(heroHeadline, {
           type: 'words,chars',
