@@ -1,0 +1,81 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { VideoSectionConfig } from '@/config/site';
+
+type Props = Omit<VideoSectionConfig, 'enabled'>;
+
+const {
+  eyebrow,
+  title,
+  highlightedTitle,
+  description,
+  provider,
+  videoId,
+  videoUrl,
+  poster,
+  posterAlt,
+  playLabel,
+  caption,
+} = Astro.props;
+
+const normalizedVideoId = videoId.trim();
+const normalizedVideoUrl = videoUrl.trim();
+const isLocalVideo = provider === 'file' && Boolean(normalizedVideoUrl);
+const embedUrl = provider === 'youtube' && normalizedVideoId
+  ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(normalizedVideoId)}?autoplay=1&rel=0`
+  : '';
+---
+
+<section class="section video-section" id="apresentacao" aria-labelledby="video-section-title">
+  <div class="container video-section-grid">
+    <div class="video-section-copy" data-reveal>
+      <p class="section-kicker">{eyebrow}</p>
+      <h2 class="spotlight-text" id="video-section-title">{title}<br /><span>{highlightedTitle}</span></h2>
+      <p class="spotlight-text">{description}</p>
+    </div>
+
+    <div class="video-frame" data-reveal>
+      {isLocalVideo ? (
+        <video controls preload="none" poster={poster} aria-label={playLabel}>
+          <source src={normalizedVideoUrl} />
+          Seu navegador não oferece suporte à reprodução deste vídeo.
+        </video>
+      ) : (
+        <div
+          class="video-poster"
+          data-video-player={embedUrl || undefined}
+          data-video-title={caption}
+        >
+          <img src={poster} alt={posterAlt} loading="lazy" />
+          <div class="video-poster-shade" aria-hidden="true"></div>
+          {embedUrl && (
+            <button class="video-play" type="button" aria-label={playLabel}>
+              <span><Icon name="lucide:play" aria-hidden="true" /></span>
+              <strong>{playLabel}</strong>
+            </button>
+          )}
+          <p class="video-caption">{caption}</p>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  document.querySelectorAll('[data-video-player]').forEach((player) => {
+    const button = player.querySelector('.video-play');
+    const embedUrl = player.dataset.videoPlayer;
+    if (!button || !embedUrl) return;
+
+    button.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = embedUrl;
+      iframe.title = player.dataset.videoTitle || 'Vídeo institucional';
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      player.replaceChildren(iframe);
+      iframe.focus();
+    }, { once: true });
+  });
+</script>

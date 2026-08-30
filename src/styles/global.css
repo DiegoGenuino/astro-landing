@@ -107,7 +107,7 @@ h3 {
 .faq-intro h2 span,
 .footer h2 span {
   color: var(--blue);
-  font-weight: 500;
+  font-weight: 600;
 }
 .section-heading p {
   width: 390px;
@@ -617,6 +617,135 @@ svg.cta-arrow-icon {
   stroke-width: 1.7;
 }
 
+.video-section {
+  position: relative;
+  overflow: hidden;
+  color: white;
+  background: #15171c;
+}
+.video-section-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(48px, 7vw, 96px);
+}
+.video-section-copy {
+  position: relative;
+  z-index: 1;
+}
+.video-section-copy .section-kicker {
+  margin-bottom: 26px;
+  color: #8ba4ff;
+}
+.video-section-copy h2 {
+  margin-bottom: 28px;
+  font-size: var(--font-section-title);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+.video-section-copy h2 span {
+  color: #6f8cff;
+  font-weight: 600;
+}
+.video-section-copy > p:last-child {
+  max-width: 355px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: var(--font-body);
+}
+.video-frame {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #252832;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+}
+.video-frame video,
+.video-frame iframe,
+.video-poster,
+.video-poster > img {
+  width: 100%;
+  height: 100%;
+}
+.video-frame video,
+.video-frame iframe {
+  display: block;
+  border: 0;
+  object-fit: cover;
+}
+.video-poster {
+  position: relative;
+}
+.video-poster > img {
+  object-fit: cover;
+  object-position: center 22%;
+  transition: transform 0.7s cubic-bezier(.22, 1, .36, 1);
+}
+.video-poster:hover > img {
+  transform: scale(1.025);
+}
+.video-poster-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(9, 12, 20, 0.28), rgba(9, 12, 20, 0.04) 58%, rgba(9, 12, 20, 0.2));
+  pointer-events: none;
+}
+.video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  color: white;
+  background: transparent;
+  border: 0;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+.video-play > span {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  padding-left: 4px;
+  color: var(--blue);
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.video-play:hover > span {
+  transform: scale(1.07);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+}
+.video-play svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  stroke-width: 1.5;
+}
+.video-play strong {
+  font-size: var(--font-label);
+  font-weight: 500;
+}
+.video-caption {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: var(--font-caption);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
 .practices {
   padding: 78px 0 92px;
   background: #f8f8f7;
@@ -632,7 +761,7 @@ svg.cta-arrow-icon {
   letter-spacing: -0.02em;
 }
 .practices .section-heading h2 span {
-  font-weight: 500;
+  font-weight: 600;
 }
 .practices .section-heading p {
   width: 315px;
@@ -773,6 +902,15 @@ svg.cta-arrow-icon {
 }
 
 @media (min-width: 1025px) {
+  .video-section-grid {
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    gap: clamp(48px, 5vw, 72px);
+  }
+
+  .video-section-copy h2 {
+    white-space: nowrap;
+  }
+
   .differentials-slider {
     width: min(1020px, 100%);
     grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
@@ -905,7 +1043,7 @@ svg.cta-arrow-icon {
 }
 .reviews-heading h2 span {
   color: var(--blue);
-  font-weight: 500;
+  font-weight: 600;
 }
 .reviews-grid {
   display: grid;
@@ -1420,6 +1558,10 @@ svg.cta-arrow-icon {
     margin-top: 46px;
     padding-top: 32px;
   }
+  .video-section-grid {
+    grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+    gap: 48px;
+  }
   .practice-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1586,6 +1728,13 @@ svg.cta-arrow-icon {
   .profile-card {
     width: min(392px, 100%);
   }
+  .video-section-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .video-section-copy > p:last-child {
+    max-width: 540px;
+  }
   .section-heading {
     display: grid;
     gap: 24px;
@@ -1733,6 +1882,26 @@ svg.cta-arrow-icon {
   .credentials li {
     align-items: flex-start;
     font-size: var(--font-label);
+  }
+  .video-section {
+    padding: 72px 0;
+  }
+  .video-section-copy .section-kicker {
+    margin-bottom: 20px;
+  }
+  .video-section-copy h2 {
+    margin-bottom: 22px;
+  }
+  .video-frame {
+    border-radius: 8px;
+  }
+  .video-play > span {
+    width: 58px;
+    height: 58px;
+  }
+  .video-caption {
+    right: 16px;
+    bottom: 14px;
   }
   .practice-grid {
     grid-template-columns: 1fr;

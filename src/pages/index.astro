@@ -4,11 +4,15 @@ import Header from '@/components/Header.astro';
 import Hero from '@/components/Hero.astro';
 import Stats from '@/components/Stats.astro';
 import About from '@/components/About.astro';
+import VideoSection from '@/components/VideoSection.astro';
 import PracticeGrid from '@/components/PracticeGrid.astro';
 import Differentials from '@/components/Differentials.astro';
 import Reviews from '@/components/Reviews.astro';
 import FAQ from '@/components/FAQ.astro';
 import Footer from '@/components/Footer.astro';
+import { siteConfig } from '@/config/site';
+
+const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoSection;
 ---
 
 <BaseLayout title="Ferreira Defesa | Advocacia Criminal" description="Defesa estratégica em crimes financeiros, corrupção e Direito Penal Econômico.">
@@ -17,6 +21,7 @@ import Footer from '@/components/Footer.astro';
     <Hero />
     <Stats />
     <About />
+    {videoSectionEnabled && <VideoSection {...videoSectionProps} />}
     <PracticeGrid />
     <Differentials />
     <Reviews />
