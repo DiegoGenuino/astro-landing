@@ -1,0 +1,303 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Hero from '@/components/Hero.astro';
+import Stats from '@/components/Stats.astro';
+import About from '@/components/About.astro';
+import PracticeGrid from '@/components/PracticeGrid.astro';
+import Differentials from '@/components/Differentials.astro';
+import Reviews from '@/components/Reviews.astro';
+import FAQ from '@/components/FAQ.astro';
+import Footer from '@/components/Footer.astro';
+---
+
+<BaseLayout title="Ferreira Defesa | Advocacia Criminal" description="Defesa estratégica em crimes financeiros, corrupção e Direito Penal Econômico.">
+  <Header />
+  <main>
+    <Hero />
+    <Stats />
+    <About />
+    <PracticeGrid />
+    <Differentials />
+    <Reviews />
+    <FAQ />
+  </main>
+  <Footer />
+
+  <script>
+    const header = document.querySelector<HTMLElement>('[data-header]');
+    const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+
+    const closeMenu = () => {
+      menuButton?.setAttribute('aria-expanded', 'false');
+      mobileMenu?.classList.remove('is-open');
+      document.body.classList.remove('menu-open');
+    };
+
+    menuButton?.addEventListener('click', () => {
+      const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', String(!isOpen));
+      mobileMenu?.classList.toggle('is-open', !isOpen);
+      document.body.classList.toggle('menu-open', !isOpen);
+    });
+
+    mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+    window.addEventListener('scroll', () => header?.classList.toggle('is-scrolled', window.scrollY > 24), { passive: true });
+
+    const whatsappContact = document.querySelector<HTMLElement>('[data-whatsapp-contact]');
+    const whatsappInvite = whatsappContact?.querySelector<HTMLElement>('[data-whatsapp-invite]');
+    const whatsappClose = whatsappContact?.querySelector<HTMLButtonElement>('[data-whatsapp-close]');
+    const whatsappButton = whatsappContact?.querySelector<HTMLButtonElement>('.floating-whatsapp');
+    let whatsappInviteDismissed = false;
+
+    const showWhatsappInvite = (force = false) => {
+      if (whatsappInviteDismissed && !force) return;
+      whatsappInvite?.classList.add('is-visible');
+      whatsappButton?.setAttribute('aria-expanded', 'true');
+    };
+
+    const hideWhatsappInvite = () => {
+      whatsappInvite?.classList.remove('is-visible');
+      whatsappButton?.setAttribute('aria-expanded', 'false');
+    };
+
+    window.setTimeout(showWhatsappInvite, 1400);
+    whatsappButton?.addEventListener('mouseenter', () => showWhatsappInvite());
+    whatsappButton?.addEventListener('focus', () => showWhatsappInvite());
+    whatsappButton?.addEventListener('click', () => {
+      const isOpen = whatsappButton.getAttribute('aria-expanded') === 'true';
+      if (isOpen) hideWhatsappInvite();
+      else showWhatsappInvite(true);
+    });
+    whatsappClose?.addEventListener('click', () => {
+      whatsappInviteDismissed = true;
+      hideWhatsappInvite();
+      whatsappButton?.focus();
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (whatsappContact && !whatsappContact.contains(event.target as Node)) hideWhatsappInvite();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && whatsappButton?.getAttribute('aria-expanded') === 'true') {
+        hideWhatsappInvite();
+        whatsappButton.focus();
+      }
+    });
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const faqItems = [...document.querySelectorAll<HTMLDetailsElement>('[data-faq-list] details')];
+    let faqIsTransitioning = false;
+
+    const animateFaq = async (item: HTMLDetailsElement, opening: boolean) => {
+      const answer = item.querySelector<HTMLElement>('.faq-answer');
+      const content = answer?.querySelector<HTMLElement>('p');
+      if (!answer || !content) return;
+
+      answer.getAnimations().forEach((animation) => animation.cancel());
+      content.getAnimations().forEach((animation) => animation.cancel());
+
+      if (opening) item.open = true;
+
+      if (reduceMotion) {
+        item.open = opening;
+        return;
+      }
+
+      item.dataset.faqAnimating = 'true';
+      const startHeight = opening ? 0 : answer.offsetHeight;
+      const endHeight = opening ? answer.scrollHeight : 0;
+      const duration = opening ? 500 : 300;
+      const easing = opening ? 'cubic-bezier(.16,1,.3,1)' : 'cubic-bezier(.4,0,.2,1)';
+
+      const panelAnimation = answer.animate([
+        { height: `${startHeight}px`, opacity: opening ? .35 : 1 },
+        { height: `${endHeight}px`, opacity: opening ? 1 : 0 },
+      ], { duration, easing, fill: 'both' });
+
+      const contentAnimation = content.animate([
+        { opacity: opening ? 0 : 1, transform: opening ? 'translate3d(0, -8px, 0)' : 'translate3d(0, 0, 0)' },
+        { opacity: opening ? 1 : 0, transform: opening ? 'translate3d(0, 0, 0)' : 'translate3d(0, -5px, 0)' },
+      ], {
+        duration: opening ? 420 : 220,
+        delay: opening ? 55 : 0,
+        easing,
+        fill: 'both',
+      });
+
+      await Promise.allSettled([panelAnimation.finished, contentAnimation.finished]);
+      panelAnimation.cancel();
+      contentAnimation.cancel();
+      if (!opening) item.open = false;
+      delete item.dataset.faqAnimating;
+    };
+
+    faqItems.forEach((item) => {
+      const summary = item.querySelector<HTMLElement>('summary');
+      summary?.addEventListener('click', async (event) => {
+        event.preventDefault();
+        if (faqIsTransitioning) return;
+        faqIsTransitioning = true;
+
+        if (item.open) {
+          await animateFaq(item, false);
+        } else {
+          const transitions = faqItems
+            .filter((other) => other !== item && other.open)
+            .map((other) => animateFaq(other, false));
+          transitions.push(animateFaq(item, true));
+          await Promise.all(transitions);
+        }
+
+        faqIsTransitioning = false;
+      });
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-differentials-slider]').forEach((slider) => {
+      const tabs = [...slider.querySelectorAll<HTMLButtonElement>('[data-difference-tab]')];
+      const slides = [...slider.querySelectorAll<HTMLElement>('[data-difference-slide]')];
+      let activeIndex = Math.max(0, tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true'));
+      let transitionVersion = 0;
+
+      const activateSlide = (index: number, focus = false) => {
+        if (!tabs[index] || !slides[index]) return;
+
+        tabs.forEach((tab, tabIndex) => {
+          const active = tabIndex === index;
+          tab.classList.toggle('is-active', active);
+          tab.setAttribute('aria-selected', String(active));
+          tab.tabIndex = active ? 0 : -1;
+          if (active) {
+            if (focus) tab.focus();
+          }
+        });
+
+        if (index === activeIndex) return;
+
+        const previousIndex = activeIndex;
+        const outgoing = slides[previousIndex];
+        const incoming = slides[index];
+        const direction = index > previousIndex ? 1 : -1;
+        const version = ++transitionVersion;
+        activeIndex = index;
+
+        slides.forEach((slide, slideIndex) => {
+          slide.getAnimations().forEach((animation) => animation.cancel());
+          slide.querySelectorAll<HTMLElement>('[data-motion-item]').forEach((item) => {
+            item.getAnimations().forEach((animation) => animation.cancel());
+          });
+          slide.classList.toggle('is-active', slideIndex === index);
+          slide.style.removeProperty('z-index');
+          slide.style.removeProperty('pointer-events');
+          if (slideIndex !== previousIndex && slideIndex !== index) slide.hidden = true;
+        });
+
+        incoming.hidden = false;
+
+        if (reduceMotion) {
+          outgoing.hidden = true;
+          return;
+        }
+
+        outgoing.style.zIndex = '1';
+        outgoing.style.pointerEvents = 'none';
+        incoming.style.zIndex = '2';
+
+        const outgoingAnimation = outgoing.animate([
+          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+          { opacity: 0, transform: `translate3d(${-direction * 10}px, 0, 0)` },
+        ], { duration: 220, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both' });
+
+        const incomingAnimation = incoming.animate([
+          { opacity: 0, transform: `translate3d(${direction * 14}px, 0, 0)` },
+          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+        ], { duration: 360, delay: 35, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' });
+
+        const itemAnimations = [...incoming.querySelectorAll<HTMLElement>('[data-motion-item]')].map((item, itemIndex) => item.animate([
+          { opacity: 0, transform: 'translate3d(0, 6px, 0)' },
+          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+        ], {
+          duration: 280,
+          delay: 85 + itemIndex * 34,
+          easing: 'cubic-bezier(.22,1,.36,1)',
+          fill: 'both',
+        }));
+
+        Promise.allSettled([
+          outgoingAnimation.finished,
+          incomingAnimation.finished,
+          ...itemAnimations.map((animation) => animation.finished),
+        ]).then(() => {
+          if (version !== transitionVersion) return;
+          outgoing.hidden = true;
+          outgoing.style.removeProperty('z-index');
+          outgoing.style.removeProperty('pointer-events');
+          incoming.style.removeProperty('z-index');
+          outgoingAnimation.cancel();
+          incomingAnimation.cancel();
+          itemAnimations.forEach((animation) => animation.cancel());
+        });
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => activateSlide(index));
+        tab.addEventListener('keydown', (event) => {
+          if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const lastIndex = tabs.length - 1;
+          let nextIndex = index;
+          if (event.key === 'Home') nextIndex = 0;
+          else if (event.key === 'End') nextIndex = lastIndex;
+          else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') nextIndex = index === lastIndex ? 0 : index + 1;
+          else nextIndex = index === 0 ? lastIndex : index - 1;
+          activateSlide(nextIndex, true);
+        });
+      });
+    });
+
+    const scrollTextBlocks = [...document.querySelectorAll<HTMLElement>('[data-scroll-text]')];
+
+    if (scrollTextBlocks.length && !reduceMotion) {
+      document.documentElement.classList.add('has-scroll-reveal');
+      let scrollTextFrame = 0;
+
+      const updateScrollText = () => {
+        scrollTextFrame = 0;
+        scrollTextBlocks.forEach((block) => {
+          const words = [...block.querySelectorAll<HTMLElement>('.reveal-word')];
+          const blockTop = block.getBoundingClientRect().top;
+          const revealStart = window.innerHeight * 0.84;
+          const revealEnd = window.innerHeight * 0.3;
+          const progress = Math.min(1, Math.max(0, (revealStart - blockTop) / (revealStart - revealEnd)));
+          const wordProgress = progress * (words.length + 3);
+
+          words.forEach((word, index) => {
+            const reveal = Math.min(1, Math.max(0, wordProgress - index));
+            word.style.opacity = String(0.16 + reveal * 0.84);
+          });
+        });
+      };
+
+      const requestScrollTextUpdate = () => {
+        if (scrollTextFrame) return;
+        scrollTextFrame = window.requestAnimationFrame(updateScrollText);
+      };
+
+      window.addEventListener('scroll', requestScrollTextUpdate, { passive: true });
+      window.addEventListener('resize', requestScrollTextUpdate, { passive: true });
+      updateScrollText();
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px' });
+
+    document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
+  </script>
+</BaseLayout>

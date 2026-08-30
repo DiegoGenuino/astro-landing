@@ -1,0 +1,32 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const bioText = 'Advogado criminalista com mais de 15 anos de atuação exclusiva em Direito Penal Econômico. Formado pela USP, especialização pela FGV Direito SP. Mais de 2.100 casos encerrados e +R$22M em ativos recuperados para clientes.';
+const bioWords = bioText.split(' ');
+---
+
+<section class="section about" id="sobre">
+  <div class="container about-grid">
+    <figure class="profile-card" data-reveal>
+      <img src="/images/eduardo-ferreira.png" alt="Dr. Eduardo Ferreira, advogado criminalista" loading="lazy" />
+      <figcaption>
+        <span>Dr. Eduardo Ferreira</span>
+        <small>Criminalista | nº 000.000</small>
+      </figcaption>
+    </figure>
+
+    <div class="about-copy" data-reveal>
+      <p class="section-kicker">Dr. Eduardo Ferreira</p>
+      <p class="about-bio" data-scroll-text aria-label={bioText}>
+        {bioWords.map((word, index) => (
+          <span class="reveal-word" aria-hidden="true">{word}{index < bioWords.length - 1 ? ' ' : ''}</span>
+        ))}
+      </p>
+      <ul class="credentials">
+        <li><Icon name="lucide:circle-check" aria-hidden="true" /><span>OAB/SP nº 000.000 — inscrito desde 2009</span></li>
+        <li><Icon name="lucide:circle-check" aria-hidden="true" /><span>Pós-graduado em Direito Penal Econômico — FGV Direito SP</span></li>
+        <li><Icon name="lucide:circle-check" aria-hidden="true" /><span>Membro da Comissão de Direito Penal Econômico OAB/SP</span></li>
+      </ul>
+    </div>
+  </div>
+</section>

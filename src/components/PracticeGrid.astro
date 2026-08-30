@@ -1,0 +1,34 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const practices = [
+  ['lucide:credit-card', 'Lavagem de dinheiro'],
+  ['lucide:file-text', 'Crimes Tributários'],
+  ['lucide:credit-card', 'Corrupção e Improbidade'],
+  ['lucide:credit-card', 'Fraudes Bancárias'],
+  ['lucide:credit-card', 'Evasão de Divisas'],
+  ['lucide:credit-card', 'Crimes Financeiros'],
+  ['lucide:credit-card', 'Gestão Fraudulenta'],
+  ['lucide:credit-card', 'Prevenção Corporativa'],
+];
+
+const description = 'Defesa em todas as fases — inquérito, ação penal e recursos — em casos de ocultação e dissimulação de ativos.';
+---
+
+<section class="section practices" id="especialidades">
+  <div class="container">
+    <div class="section-heading" data-reveal>
+      <h2>Crimes que defendemos<br />com <span>excelência</span></h2>
+      <p>Atuação técnica e especializada nas práticas mais complexas do Direito Penal Econômico. Cada área com histórico sólido de resultados.</p>
+    </div>
+    <div class="practice-grid">
+      {practices.map(([icon, title]) => (
+        <article class="practice-card" data-reveal>
+          <span class="practice-icon" aria-hidden="true"><Icon name={icon} /></span>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

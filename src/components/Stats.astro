@@ -1,0 +1,19 @@
+---
+const stats = [
+  ['+R$22M', 'em ativos recuperados'],
+  ['+1.700', 'atos processuais realizados'],
+  ['97%', 'de avaliações positivas'],
+  ['+2.100', 'casos analisados'],
+];
+---
+
+<section class="stats" id="numeros" aria-label="Resultados do escritório">
+  <div class="container stats-grid">
+    {stats.map(([value, label]) => (
+      <article class="stat" data-reveal>
+        <strong>{value}</strong>
+        <span>{label}</span>
+      </article>
+    ))}
+  </div>
+</section>

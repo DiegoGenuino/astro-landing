@@ -1,0 +1,84 @@
+---
+import { Icon } from 'astro-icon/components';
+import ArrowUpRightIcon from '@/components/ArrowUpRightIcon.astro';
+
+const slides = [
+  {
+    icon: 'lucide:badge-check',
+    title: 'Atuação exclusiva em crimes financeiros',
+    description: 'Especialização total garante maior profundidade jurídica e estratégias mais eficazes para delitos econômicos complexos.',
+  },
+  {
+    icon: 'lucide:scale',
+    title: 'Equipe técnica em Direito Penal Econômico',
+    description: 'Conhecimento especializado para conduzir investigações e processos sensíveis com precisão em cada etapa.',
+  },
+  {
+    icon: 'lucide:user-round-check',
+    title: 'Atendimento direto com o advogado responsável',
+    description: 'Contato próximo com quem lidera a estratégia, garantindo decisões rápidas, claras e plenamente informadas.',
+  },
+  {
+    icon: 'lucide:lock-keyhole',
+    title: 'Sigilo profissional absoluto e ética inabalável',
+    description: 'Proteção rigorosa de informações, documentos e decisões em todas as fases do atendimento jurídico.',
+  },
+  {
+    icon: 'lucide:book-open-check',
+    title: 'Estratégias alinhadas às jurisprudências recentes',
+    description: 'Atualização contínua para construir teses consistentes e adequadas ao cenário jurídico de cada caso.',
+  },
+  {
+    icon: 'lucide:messages-square',
+    title: 'Comunicação clara e acompanhamento contínuo',
+    description: 'Você acompanha o andamento do caso com orientações objetivas, retorno próximo e transparência.',
+  },
+];
+---
+
+<section class="section differentials" id="diferenciais">
+  <div class="container">
+    <div class="section-heading section-heading-narrow" data-reveal>
+      <h2>Por que a <span>Ferreira Defesa</span><br />é sua melhor escolha?</h2>
+    </div>
+
+    <div class="differentials-slider" data-differentials-slider>
+      <div class="difference-stage" data-reveal aria-live="polite">
+        {slides.map((slide, index) => (
+          <article
+            class:list={['featured-difference', { 'is-active': index === 0 }]}
+            id={`diferencial-card-${index + 1}`}
+            data-difference-slide
+            hidden={index !== 0}
+          >
+            <span class="feature-mark" aria-hidden="true" data-motion-item><Icon name={slide.icon} /></span>
+            <h3 data-motion-item>{slide.title}</h3>
+            <p data-motion-item>{slide.description}</p>
+            <a class="card-cta" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer" data-motion-item>
+              <span>Solicitar diagnóstico criminal</span>
+              <b aria-hidden="true"><ArrowUpRightIcon /></b>
+            </a>
+          </article>
+        ))}
+      </div>
+
+      <div class="difference-tabs" role="tablist" aria-label="Diferenciais da Ferreira Defesa" data-reveal>
+        {slides.map((slide, index) => (
+          <button
+            class:list={['difference-tab', { 'is-active': index === 0 }]}
+            type="button"
+            role="tab"
+            aria-selected={index === 0 ? 'true' : 'false'}
+            aria-controls={`diferencial-card-${index + 1}`}
+            tabindex={index === 0 ? '0' : '-1'}
+            data-difference-tab
+            data-index={index}
+          >
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <p>{slide.title}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
