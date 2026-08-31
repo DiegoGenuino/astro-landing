@@ -132,7 +132,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
             mask: 'chars',
             charsClass: 'hero-char',
             wordsClass: 'hero-word',
-            aria: 'auto',
+            aria: 'none',
             onSplit(self) {
               gsap.set(heroHeadline, { visibility: 'visible' });
               return gsap.from(self.chars, {
@@ -156,7 +156,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
             mask: 'lines',
             linesClass: 'hero-line',
             autoSplit: true,
-            aria: 'auto',
+            aria: 'none',
             onSplit(self) {
               gsap.set(heroDescription, { visibility: 'visible' });
               return gsap.from(self.lines, {
@@ -189,7 +189,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
 
     if (reduceMotion) {
       spotlightElements.forEach((element) => {
-        element.style.visibility = 'visible';
+        element.style.opacity = '1';
       });
     } else {
       const spotlightObserver = new IntersectionObserver((entries) => {
@@ -204,10 +204,10 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
           type: 'words,chars',
           charsClass: 'spotlight-char',
           wordsClass: 'spotlight-word',
-          aria: 'auto',
+          aria: 'none',
         });
 
-        gsap.set(element, { visibility: 'visible' });
+        gsap.set(element, { opacity: 1 });
         gsap.from(split.chars, {
           opacity: .1,
           scale: .8,
@@ -219,7 +219,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
           onComplete: () => gsap.set(split.chars, { clearProps: 'willChange' }),
         });
           }).catch(() => {
-            element.style.visibility = 'visible';
+            element.style.opacity = '1';
           });
         });
       }, { threshold: 0.05, rootMargin: '0px 0px -8% 0px' });
@@ -560,6 +560,6 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
 
 <noscript>
   <style>
-    .spotlight-text { visibility: visible !important; }
+    .spotlight-text { opacity: 1 !important; }
   </style>
 </noscript>

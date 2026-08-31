@@ -27,6 +27,14 @@ export interface LocationSectionConfig {
   directionsLabel: string;
 }
 
+export interface AiDiscoveryConfig {
+  enabled: boolean;
+  llmsPath: string;
+  markdownPath: string;
+  summary: string;
+  usageNote: string;
+}
+
 export interface SeoConfig {
   siteName: string;
   legalName: string;
@@ -42,6 +50,10 @@ export interface SeoConfig {
   defaultImageHeight: number;
   themeColor: string;
   author: string;
+  professionalName: string;
+  professionalRole: string;
+  professionalDescription: string;
+  professionalImage: string;
   keywords: string[];
   logo: string;
   areaServed: string;
@@ -57,6 +69,7 @@ export interface SiteConfig {
   seo: SeoConfig;
   videoSection: VideoSectionConfig;
   locationSection: LocationSectionConfig;
+  aiDiscovery: AiDiscoveryConfig;
 }
 
 export const siteConfig: SiteConfig = {
@@ -75,6 +88,10 @@ export const siteConfig: SiteConfig = {
     defaultImageHeight: 942,
     themeColor: '#111318',
     author: 'Ferreira Defesa',
+    professionalName: 'Dr. Eduardo Ferreira',
+    professionalRole: 'Advogado criminalista em Direito Penal Econômico',
+    professionalDescription: 'Advogado criminalista com mais de 15 anos de atuação exclusiva em Direito Penal Econômico. Formado pela USP, com especialização pela FGV Direito SP. Mais de 2.100 casos encerrados e +R$22M em ativos recuperados para clientes.',
+    professionalImage: '/images/eduardo-ferreira-560.webp',
     keywords: [
       'advogado criminalista',
       'Direito Penal Econômico',
@@ -122,5 +139,13 @@ export const siteConfig: SiteConfig = {
     mapQuery: 'São Paulo, SP, Brasil',
     mapTitle: 'Localização da Ferreira Defesa em São Paulo',
     directionsLabel: 'Abrir no Google Maps',
+  },
+  aiDiscovery: {
+    // Desative apenas se este projeto não puder ser descoberto por agentes.
+    enabled: true,
+    llmsPath: '/llms.txt',
+    markdownPath: '/index.md',
+    summary: 'Escritório de advocacia criminal com atuação estratégica em Direito Penal Econômico, crimes financeiros e defesa criminal empresarial no Brasil.',
+    usageNote: 'O conteúdo é institucional e informativo. Não substitui análise jurídica individual e não deve ser interpretado como promessa de resultado.',
   },
 };

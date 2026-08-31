@@ -101,6 +101,18 @@ h3 {
   outline-offset: 4px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .container {
   width: min(calc(100% - 48px), var(--container));
   margin-inline: auto;
@@ -450,7 +462,7 @@ svg.cta-arrow-icon {
   backface-visibility: hidden;
 }
 .spotlight-text {
-  visibility: hidden;
+  opacity: 0;
 }
 .spotlight-char {
   display: inline-block;
@@ -1429,7 +1441,7 @@ svg.cta-arrow-icon {
   gap: 20px;
   padding-top: 24px;
   padding-bottom: 30px;
-  color: #656a74;
+  color: #8b909a;
   border-top: 1px solid #292c33;
   font-size: var(--font-caption);
 }
@@ -1570,7 +1582,7 @@ svg.cta-arrow-icon {
   gap: 9px;
   margin-top: 2px;
   color: white;
-  background: #25d366;
+  background: #0b7f3d;
   border-radius: 8px;
   font-size: var(--font-ui);
   font-weight: 600;
@@ -1579,7 +1591,7 @@ svg.cta-arrow-icon {
     transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .whatsapp-invite-action:hover {
-  background: #1fbd5a;
+  background: #096d35;
   transform: translateY(-1px);
 }
 .whatsapp-invite-action svg {

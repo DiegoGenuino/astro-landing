@@ -25,10 +25,14 @@ const {
 } = Astro.props;
 
 const seo = siteConfig.seo;
+const aiDiscovery = siteConfig.aiDiscovery;
 const resolvedTitle = title ? seo.titleTemplate.replace('%s', title) : seo.defaultTitle;
 const canonicalUrl = new URL(canonical || Astro.url.pathname, seo.siteUrl).toString();
 const imageUrl = new URL(image, seo.siteUrl).toString();
 const logoUrl = new URL(seo.logo, seo.siteUrl).toString();
+const professionalImageUrl = new URL(seo.professionalImage, seo.siteUrl).toString();
+const llmsUrl = new URL(aiDiscovery.llmsPath, seo.siteUrl).toString();
+const markdownUrl = new URL(aiDiscovery.markdownPath, seo.siteUrl).toString();
 const robotsContent = noindex
   ? 'noindex, nofollow, noarchive'
   : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
@@ -53,6 +57,29 @@ const structuredData: Record<string, unknown>[] = [
     description,
     areaServed: seo.areaServed,
     knowsAbout: seo.knowsAbout,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${seo.siteUrl}/#professional`,
+    name: seo.professionalName,
+    jobTitle: seo.professionalRole,
+    description: seo.professionalDescription,
+    image: professionalImageUrl,
+    worksFor: { '@id': `${seo.siteUrl}/#legal-service` },
+    knowsAbout: seo.knowsAbout,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: resolvedTitle,
+    description,
+    inLanguage: seo.language,
+    isPartOf: { '@id': `${seo.siteUrl}/#website` },
+    about: { '@id': `${seo.siteUrl}/#legal-service` },
+    mainEntity: { '@id': `${seo.siteUrl}/#professional` },
   },
 ];
 
@@ -80,6 +107,8 @@ const serializedStructuredData = JSON.stringify(structuredData).replace(/</g, '\
 <link rel="canonical" href={canonicalUrl} />
 <link rel="alternate" hreflang={seo.language} href={canonicalUrl} />
 <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+{aiDiscovery.enabled && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
+{aiDiscovery.enabled && <link rel="describedby" type="text/plain" href={llmsUrl} />}
 
 <meta property="og:site_name" content={seo.siteName} />
 <meta property="og:locale" content={seo.locale} />

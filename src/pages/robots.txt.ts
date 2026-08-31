@@ -9,6 +9,8 @@ export const GET: APIRoute = () => {
     'User-agent: *',
     'Allow: /',
     '',
+    `# AI-readable summary: ${siteUrl}${siteConfig.aiDiscovery.llmsPath}`,
+    '',
     `Sitemap: ${siteUrl}/sitemap.xml`,
     `Host: ${siteUrl}`,
     '',
