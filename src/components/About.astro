@@ -8,7 +8,21 @@ const bioWords = bioText.split(' ');
 <section class="section about" id="sobre">
   <div class="container about-grid">
     <figure class="profile-card" data-reveal>
-      <img src="/images/eduardo-ferreira.png" alt="Dr. Eduardo Ferreira, advogado criminalista" loading="lazy" />
+      <picture>
+        <source
+          type="image/webp"
+          srcset="/images/eduardo-ferreira-560.webp 560w, /images/eduardo-ferreira-1122.webp 1122w"
+          sizes="(max-width: 780px) calc(100vw - 34px), 392px"
+        />
+        <img
+          src="/images/eduardo-ferreira-560.webp"
+          width="560"
+          height="700"
+          alt="Dr. Eduardo Ferreira, advogado criminalista"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
       <figcaption>
         <span>Dr. Eduardo Ferreira</span>
         <small>Criminalista | nº 000.000</small>

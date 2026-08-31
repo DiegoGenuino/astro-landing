@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@fontsource/poppins": "^5.2.7",
     "@iconify-json/lucide": "^1.2.127",
     "astro": "^5.13.4",
     "astro-icon": "^1.2.0",

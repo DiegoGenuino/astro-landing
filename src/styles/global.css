@@ -1,3 +1,32 @@
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/poppins-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/poppins-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/poppins-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/poppins-700.woff2") format("woff2");
+}
+
 :root {
   --ink: #15171c;
   --muted: #686d78;
@@ -314,9 +343,13 @@ svg.cta-arrow-icon {
   position: absolute;
   inset: 0;
 }
+.hero-media picture,
 .hero-media img {
+  display: block;
   width: 100%;
   height: 100%;
+}
+.hero-media img {
   object-fit: cover;
   object-position: 58% center;
 }
@@ -351,12 +384,14 @@ svg.cta-arrow-icon {
   gap: 11px;
   margin-bottom: 18px;
   padding: 8px 14px 8px 9px;
-  color: #6e6e6e;
-  background: #efefef;
+  color: #343840;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.82);
   border-radius: 100px;
   font-size: var(--font-caption);
-  font-weight: 400;
-  backdrop-filter: blur(10px);
+  font-weight: 500;
+  box-shadow: 0 8px 26px rgba(4, 8, 16, 0.22);
+  backdrop-filter: blur(14px);
 }
 .trust-avatars {
   display: flex;
@@ -365,7 +400,7 @@ svg.cta-arrow-icon {
   width: 36px;
   height: 36px;
   margin-left: -6px;
-  background-image: url("https://images.unsplash.com/photo-1535643302794-19c3804b874b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  background-image: url("/images/avatar-1.webp");
   background-position: center;
   background-size: cover;
   border: 1px solid white;
@@ -373,12 +408,12 @@ svg.cta-arrow-icon {
 }
 .trust-avatars i:first-child {
   margin-left: 0;
-  background-image: url("https://images.unsplash.com/photo-1695927621677-ec96e048dce2?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  background-image: url("/images/avatar-2.webp");
   background-position: center;
   background-size: cover;
 }
 .trust-avatars i:last-child {
-  background-image: url("https://images.unsplash.com/photo-1761358531981-4064d22bb03a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  background-image: url("/images/avatar-3.webp");
   background-position: center;
   background-size: cover;
 }
@@ -412,14 +447,14 @@ svg.cta-arrow-icon {
 }
 .hero-char,
 .hero-line {
-  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
 }
 .spotlight-text {
   visibility: hidden;
 }
 .spotlight-char {
   display: inline-block;
-  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
 }
 .spotlight-word {
   display: inline-block;
@@ -544,6 +579,9 @@ svg.cta-arrow-icon {
   aspect-ratio: 392 / 505;
   object-fit: cover;
   object-position: center top;
+}
+.profile-card picture {
+  display: block;
 }
 .profile-card figcaption {
   position: absolute;
@@ -1246,6 +1284,97 @@ svg.cta-arrow-icon {
   line-height: 1.7;
 }
 
+.location-section {
+  max-width: 100%;
+  overflow: clip;
+  background: #f7f7f5;
+}
+.location-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(56px, 7vw, 104px);
+}
+.location-grid > * {
+  min-width: 0;
+}
+.location-copy .section-kicker {
+  margin-bottom: 16px;
+}
+.location-copy h2 {
+  margin-bottom: 24px;
+  font-size: var(--font-section-title);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+.location-copy h2 span {
+  color: var(--blue);
+  font-weight: 600;
+}
+.location-copy > p:not(.section-kicker) {
+  margin-bottom: 32px;
+  color: var(--muted);
+  font-size: var(--font-body-small);
+}
+.location-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 28px;
+  font-size: var(--font-body);
+  font-style: normal;
+  font-weight: 500;
+}
+.location-address svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  color: var(--blue);
+}
+.location-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+  color: var(--blue);
+  border-bottom: 1px solid currentColor;
+  font-size: var(--font-ui);
+  font-weight: 600;
+  transition:
+    color 0.25s ease,
+    gap 0.25s ease;
+}
+.location-link:hover {
+  gap: 13px;
+  color: var(--blue-dark);
+}
+.location-link svg {
+  width: 14px;
+  height: 14px;
+}
+.location-map {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 430px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e5e7eb;
+  border: 1px solid #dfe2e8;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(14, 20, 38, 0.1);
+}
+.location-map iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+}
+
 .footer {
   color: white;
   background: #0e1014;
@@ -1586,6 +1715,13 @@ svg.cta-arrow-icon {
   .faq-grid {
     gap: 70px;
   }
+  .location-grid {
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 48px;
+  }
+  .location-map {
+    min-height: 390px;
+  }
 }
 
 @media (max-width: 780px) {
@@ -1773,6 +1909,18 @@ svg.cta-arrow-icon {
     grid-template-columns: 1fr;
     gap: 50px;
   }
+  .location-grid {
+    grid-template-columns: 1fr;
+    gap: 42px;
+  }
+  .location-copy > p:not(.section-kicker) {
+    max-width: 560px;
+  }
+  .location-map {
+    width: min(100%, calc(100vw - 34px));
+    min-height: 360px;
+    aspect-ratio: 4 / 3;
+  }
   .footer-cta {
     align-items: flex-start;
     flex-direction: column;
@@ -1808,6 +1956,20 @@ svg.cta-arrow-icon {
   }
   .section {
     padding: 68px 0;
+  }
+  .location-grid {
+    gap: 34px;
+  }
+  .location-copy > p:not(.section-kicker) {
+    margin-bottom: 28px;
+  }
+  .location-address {
+    margin-bottom: 24px;
+  }
+  .location-map {
+    width: min(100%, calc(100vw - 30px));
+    min-height: 320px;
+    border-radius: 8px;
   }
   .hero,
   .hero-inner {

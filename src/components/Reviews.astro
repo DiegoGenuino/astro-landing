@@ -4,21 +4,21 @@ const reviews = [
     quote: 'Excelente advogado, resolveu meu caso com rapidez e precisão. A atenção pessoal que recebi foi diferencial — nunca me senti desamparado durante o processo.',
     name: 'Carlos M.',
     details: 'Empresário, São Paulo',
-    avatar: '/images/eduardo-ferreira.png',
+    avatar: '/images/avatar-1.webp',
     position: 'center 15%',
   },
   {
     quote: 'Profissionalismo acima de tudo. Quando a situação parecia sem saída, a equipe encontrou uma tese que virou o jogo. Recomendo sem hesitar.',
     name: 'Ricardo T.',
     details: 'Diretor Financeiro, Rio de Janeiro',
-    avatar: '/images/hero-legal.png',
+    avatar: '/images/avatar-2.webp',
     position: '62% 24%',
   },
   {
     quote: 'O sigilo e a atenção ao cliente são reais. Cada dúvida foi respondida com clareza. Resultado: processo encerrado sem condenação. Gratidão enorme.',
     name: 'Ana P.',
     details: 'Executiva, Brasília',
-    avatar: '/images/hero-legal.png',
+    avatar: '/images/avatar-3.webp',
     position: '76% 30%',
   },
 ];
@@ -27,7 +27,7 @@ const reviews = [
 <section class="section reviews" id="avaliacoes" aria-labelledby="reviews-title">
   <div class="container reviews-shell">
     <header class="reviews-heading" data-reveal>
-      <img src="/images/google-icon.png" width="41" height="41" alt="Google" />
+      <img src="/images/google-icon.png" width="41" height="41" alt="Google" loading="lazy" decoding="async" />
       <h2 class="spotlight-text" id="reviews-title">O que nossos clientes <span>dizem</span></h2>
     </header>
 
@@ -42,7 +42,7 @@ const reviews = [
                 </svg>
               ))}
             </div>
-            <img class="review-google" src="/images/google-icon.png" width="41" height="41" alt="" aria-hidden="true" />
+            <img class="review-google" src="/images/google-icon.png" width="41" height="41" alt="" aria-hidden="true" loading="lazy" decoding="async" />
           </div>
 
           <blockquote>
@@ -50,7 +50,7 @@ const reviews = [
           </blockquote>
 
           <footer class="review-author">
-            <img src={review.avatar} alt="" style={`object-position: ${review.position}`} loading="lazy" />
+            <img src={review.avatar} width="34" height="34" alt="" style={`object-position: ${review.position}`} loading="lazy" decoding="async" />
             <div>
               <strong>{review.name}</strong>
               <span>{review.details}</span>

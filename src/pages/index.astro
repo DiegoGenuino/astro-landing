@@ -9,13 +9,20 @@ import PracticeGrid from '@/components/PracticeGrid.astro';
 import Differentials from '@/components/Differentials.astro';
 import Reviews from '@/components/Reviews.astro';
 import FAQ from '@/components/FAQ.astro';
+import LocationSection from '@/components/LocationSection.astro';
 import Footer from '@/components/Footer.astro';
 import { siteConfig } from '@/config/site';
+import { faqItems } from '@/data/faqs';
 
 const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoSection;
+const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.locationSection;
 ---
 
-<BaseLayout title="Ferreira Defesa | Advocacia Criminal" description="Defesa estratégica em crimes financeiros, corrupção e Direito Penal Econômico.">
+<BaseLayout
+  title="Defesa em Crimes Financeiros e Corrupção"
+  description={siteConfig.seo.defaultDescription}
+  faqItems={faqItems}
+>
   <Header />
   <main>
     <Hero />
@@ -26,15 +33,15 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
     <Differentials />
     <Reviews />
     <FAQ />
+    {locationSectionEnabled && <LocationSection {...locationSectionProps} />}
   </main>
   <Footer />
 
   <script>
     import { gsap } from 'gsap';
     import { SplitText } from 'gsap/SplitText';
-    import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-    gsap.registerPlugin(SplitText, ScrollTrigger);
+    gsap.registerPlugin(SplitText);
 
     const header = document.querySelector<HTMLElement>('[data-header]');
     const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
@@ -117,10 +124,12 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
               filter: 'blur(8px)',
               rotationX: -24,
               transformOrigin: '50% 100%',
+              willChange: 'transform,opacity,filter',
               duration: .78,
               delay: .12,
               stagger: { each: .016, from: 'start' },
               ease: 'power4.out',
+              onComplete: () => gsap.set(self.chars, { clearProps: 'willChange' }),
             });
           },
         });
@@ -137,10 +146,12 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
               yPercent: 105,
               autoAlpha: 0,
               filter: 'blur(6px)',
+              willChange: 'transform,opacity,filter',
               duration: .72,
               delay: 1.02,
               stagger: .11,
               ease: 'power3.out',
+              onComplete: () => gsap.set(self.lines, { clearProps: 'willChange' }),
             });
           },
         });
@@ -153,9 +164,15 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
 
     const spotlightElements = [...document.querySelectorAll<HTMLElement>('.spotlight-text')];
 
-    if (reduceMotion) {
-      gsap.set(spotlightElements, { visibility: 'visible' });
-    } else {
+    const initializeSpotlightText = async () => {
+      if (reduceMotion) {
+        gsap.set(spotlightElements, { visibility: 'visible' });
+        return;
+      }
+
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+      gsap.registerPlugin(ScrollTrigger);
+
       spotlightElements.forEach((element) => {
         const split = SplitText.create(element, {
           type: 'words,chars',
@@ -169,9 +186,11 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
           opacity: .1,
           scale: .8,
           filter: 'blur(4px)',
+          willChange: 'transform,opacity,filter',
           stagger: { each: .03, from: 'center' },
           duration: .4,
           ease: 'power2.out',
+          onComplete: () => gsap.set(split.chars, { clearProps: 'willChange' }),
           scrollTrigger: {
             trigger: element,
             start: 'top 88%',
@@ -179,7 +198,11 @@ const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoS
           },
         });
       });
-    }
+    };
+
+    initializeSpotlightText().catch(() => {
+      gsap.set(spotlightElements, { visibility: 'visible' });
+    });
 
     const faqItems = [...document.querySelectorAll<HTMLDetailsElement>('[data-faq-list] details')];
     let faqIsTransitioning = false;

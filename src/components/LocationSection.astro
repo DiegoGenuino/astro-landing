@@ -1,0 +1,51 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { LocationSectionConfig } from '@/config/site';
+
+type Props = Omit<LocationSectionConfig, 'enabled'>;
+
+const {
+  eyebrow,
+  title,
+  highlightedTitle,
+  description,
+  address,
+  mapQuery,
+  mapTitle,
+  directionsLabel,
+} = Astro.props;
+
+const encodedLocation = encodeURIComponent(mapQuery.trim() || address);
+const embedUrl = `https://www.google.com/maps?q=${encodedLocation}&output=embed`;
+const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
+---
+
+<section class="section location-section" id="localizacao" aria-labelledby="location-title">
+  <div class="container location-grid">
+    <div class="location-copy" data-reveal>
+      <p class="section-kicker">{eyebrow}</p>
+      <h2 class="spotlight-text" id="location-title">{title}<br /><span>{highlightedTitle}</span></h2>
+      <p class="spotlight-text">{description}</p>
+
+      <address class="location-address">
+        <Icon name="lucide:map-pin" aria-hidden="true" />
+        <span>{address}</span>
+      </address>
+
+      <a class="location-link" href={directionsUrl} target="_blank" rel="noreferrer">
+        {directionsLabel}
+        <Icon name="lucide:external-link" aria-hidden="true" />
+      </a>
+    </div>
+
+    <div class="location-map" data-reveal>
+      <iframe
+        src={embedUrl}
+        title={mapTitle}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</section>

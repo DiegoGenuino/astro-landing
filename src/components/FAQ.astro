@@ -1,12 +1,6 @@
 ---
 import ArrowUpRightIcon from '@/components/ArrowUpRightIcon.astro';
-
-const faqs = [
-  ['Quando devo procurar um advogado criminalista?', 'O ideal é buscar orientação assim que houver conhecimento de investigação, intimação, bloqueio de bens ou qualquer risco criminal. A atuação antecipada amplia as possibilidades estratégicas.'],
-  ['O atendimento é sigiloso?', 'Sim. Todas as conversas, documentos e informações são tratados sob sigilo profissional absoluto, desde o primeiro contato.'],
-  ['O escritório atende fora de São Paulo?', 'Sim. A atuação pode ocorrer em todo o Brasil, com acompanhamento presencial ou remoto conforme a necessidade do caso.'],
-  ['Como funciona o primeiro diagnóstico?', 'O primeiro contato serve para entender o contexto, identificar urgências e definir os próximos passos. Casos sensíveis recebem retorno prioritário.'],
-];
+import { faqItems } from '@/data/faqs';
 ---
 
 <section class="section faq" id="faq">
@@ -19,7 +13,7 @@ const faqs = [
     </div>
 
     <div class="faq-list" data-faq-list>
-      {faqs.map(([question, answer], index) => (
+      {faqItems.map(({ question, answer }, index) => (
         <details data-reveal open={index === 0}>
           <summary><span>{question}</span><i aria-hidden="true"></i></summary>
           <div class="faq-answer"><p>{answer}</p></div>

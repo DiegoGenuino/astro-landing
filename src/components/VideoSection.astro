@@ -46,7 +46,7 @@ const embedUrl = provider === 'youtube' && normalizedVideoId
           data-video-player={embedUrl || undefined}
           data-video-title={caption}
         >
-          <img src={poster} alt={posterAlt} loading="lazy" />
+          <img src={poster} width="1280" height="720" alt={posterAlt} loading="lazy" decoding="async" fetchpriority="low" />
           <div class="video-poster-shade" aria-hidden="true"></div>
           {embedUrl && (
             <button class="video-play" type="button" aria-label={playLabel}>

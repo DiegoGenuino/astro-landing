@@ -5,7 +5,22 @@ import WhatsAppIcon from '@/components/WhatsAppIcon.astro';
 
 <section class="hero" id="inicio" aria-labelledby="hero-title">
   <div class="hero-media" aria-hidden="true">
-    <img src="/images/hero-legal.png" alt="" fetchpriority="high" />
+    <picture>
+      <source
+        type="image/webp"
+        srcset="/images/hero-legal-960.webp 960w, /images/hero-legal-1672.webp 1672w"
+        sizes="100vw"
+      />
+      <img
+        src="/images/hero-legal-1672.webp"
+        width="1672"
+        height="942"
+        alt=""
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </picture>
   </div>
   <div class="container hero-inner">
     <div class="hero-copy">
