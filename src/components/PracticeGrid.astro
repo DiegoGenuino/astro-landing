@@ -3,6 +3,29 @@ import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config/site';
 
 const section = siteConfig.practiceSection;
+
+const createGridPositions = (count: number, maximumColumns: number) => {
+  if (!count) return [];
+
+  const rowCount = Math.ceil(count / maximumColumns);
+  const minimumItemsPerRow = Math.floor(count / rowCount);
+  const largerRows = count % rowCount;
+  const rowSizes = Array.from(
+    { length: rowCount },
+    (_, rowIndex) => minimumItemsPerRow + (rowIndex < largerRows ? 1 : 0),
+  );
+
+  return rowSizes.flatMap((rowSize) => {
+    const span = 12 / rowSize;
+    return Array.from({ length: rowSize }, (_, itemIndex) => ({
+      start: 1 + itemIndex * span,
+      span,
+    }));
+  });
+};
+
+const desktopPositions = createGridPositions(section.items.length, 4);
+const tabletPositions = createGridPositions(section.items.length, 2);
 ---
 
 <section class="section practices" id={section.id}>
@@ -11,9 +34,13 @@ const section = siteConfig.practiceSection;
       <h2 class="spotlight-text">{section.title}<br />com <span>{section.highlightedTitle}</span></h2>
       <p class="spotlight-text">{section.description}</p>
     </div>
-    <div class="practice-grid">
-      {section.items.map(({ icon, title, description }) => (
-        <article class="practice-card" data-reveal>
+    <div class="practice-grid" data-card-count={section.items.length}>
+      {section.items.map(({ icon, title, description }, index) => (
+        <article
+          class="practice-card"
+          data-reveal
+          style={`--practice-start:${desktopPositions[index].start};--practice-span:${desktopPositions[index].span};--practice-tablet-start:${tabletPositions[index].start};--practice-tablet-span:${tabletPositions[index].span}`}
+        >
           <span class="practice-icon" aria-hidden="true"><Icon name={icon} /></span>
           <h3 class="spotlight-text">{title}</h3>
           <p>{description}</p>

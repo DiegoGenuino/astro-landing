@@ -96,20 +96,51 @@ export interface DifferentialsSectionConfig {
   items: Array<{ icon: string; title: string; description: string }>;
 }
 
+export type ReviewsSource = 'google' | 'manual';
+
+export interface ReviewItem {
+  quote: string;
+  name: string;
+  details: string;
+  rating: number | null;
+  avatar: string;
+  avatarPosition: string;
+  publishedAt: string | null;
+  publishedAtLabel: string;
+  googleMapsUrl: string;
+  authorProfileUrl: string;
+  source: 'google' | 'manual';
+}
+
+export type ManualReviewItem = Pick<
+  ReviewItem,
+  'quote' | 'name' | 'details' | 'rating' | 'avatar' | 'avatarPosition'
+> & Partial<Pick<ReviewItem, 'publishedAt' | 'publishedAtLabel' | 'googleMapsUrl' | 'authorProfileUrl'>>;
+
 export interface ReviewsSectionConfig {
+  enabled: boolean;
   id: string;
   title: string;
   highlightedTitle: string;
   platformLogo: ImageAsset;
-  ratingLabel: string;
-  rating: number;
-  items: Array<{
+  source: ReviewsSource;
+  maxRating: number;
+  ratingUnavailableLabel: string;
+  orderingNotice: string;
+  google: {
+    placeId: string;
+    limit: number;
+    reviewsUrl: string;
+  };
+  fallbacks: {
     quote: string;
     name: string;
     details: string;
     avatar: string;
     avatarPosition: string;
-  }>;
+    publishedAtLabel: string;
+  };
+  manualItems: ManualReviewItem[];
 }
 
 export interface FaqSectionConfig {
@@ -201,6 +232,13 @@ export interface SeoConfig {
   }>;
 }
 
+export interface DeploymentConfig {
+  projectName: string;
+  subdomain: string;
+  baseDomain: string;
+  cnameTarget: string;
+}
+
 export interface SiteConfig {
   identity: IdentityConfig;
   contact: ContactConfig;
@@ -217,6 +255,7 @@ export interface SiteConfig {
   videoSection: VideoSectionConfig;
   locationSection: LocationSectionConfig;
   aiDiscovery: AiDiscoveryConfig;
+  deployment: DeploymentConfig;
 }
 
 const practiceDescription = 'Defesa em todas as fases — inquérito, ação penal e recursos — em casos de ocultação e dissimulação de ativos.';
@@ -348,16 +387,33 @@ export const siteConfig = {
     ],
   },
   reviewsSection: {
+    enabled: true,
     id: 'avaliacoes',
     title: 'O que nossos clientes',
     highlightedTitle: 'dizem',
     platformLogo: { src: '/images/google-icon.png', width: 41, height: 41, alt: 'Google' },
-    ratingLabel: '5 de 5 estrelas',
-    rating: 5,
-    items: [
-      { quote: 'Excelente advogado, resolveu meu caso com rapidez e precisão. A atenção pessoal que recebi foi diferencial — nunca me senti desamparado durante o processo.', name: 'Carlos M.', details: 'Empresário, São Paulo', avatar: '/images/avatar-1.webp', avatarPosition: 'center 15%' },
-      { quote: 'Profissionalismo acima de tudo. Quando a situação parecia sem saída, a equipe encontrou uma tese que virou o jogo. Recomendo sem hesitar.', name: 'Ricardo T.', details: 'Diretor Financeiro, Rio de Janeiro', avatar: '/images/avatar-2.webp', avatarPosition: '62% 24%' },
-      { quote: 'O sigilo e a atenção ao cliente são reais. Cada dúvida foi respondida com clareza. Resultado: processo encerrado sem condenação. Gratidão enorme.', name: 'Ana P.', details: 'Executiva, Brasília', avatar: '/images/avatar-3.webp', avatarPosition: '76% 30%' },
+    source: 'google',
+    maxRating: 5,
+    ratingUnavailableLabel: 'Avaliação não disponível',
+    orderingNotice: 'Avaliações selecionadas por relevância.',
+    google: {
+      // O Place ID é público. A chave secreta fica em GOOGLE_PLACES_API_KEY.
+      placeId: '',
+      limit: 3,
+      reviewsUrl: '',
+    },
+    fallbacks: {
+      quote: 'Comentário não disponível',
+      name: 'Usuário do Google',
+      details: 'Não disponível',
+      avatar: '/images/google-icon.png',
+      avatarPosition: 'center',
+      publishedAtLabel: 'Data não disponível',
+    },
+    manualItems: [
+      { quote: 'Excelente advogado, resolveu meu caso com rapidez e precisão. A atenção pessoal que recebi foi diferencial — nunca me senti desamparado durante o processo.', name: 'Carlos M.', details: 'Empresário, São Paulo', rating: 5, avatar: '/images/avatar-1.webp', avatarPosition: 'center 15%' },
+      { quote: 'Profissionalismo acima de tudo. Quando a situação parecia sem saída, a equipe encontrou uma tese que virou o jogo. Recomendo sem hesitar.', name: 'Ricardo T.', details: 'Diretor Financeiro, Rio de Janeiro', rating: 5, avatar: '/images/avatar-2.webp', avatarPosition: '62% 24%' },
+      { quote: 'O sigilo e a atenção ao cliente são reais. Cada dúvida foi respondida com clareza. Resultado: processo encerrado sem condenação. Gratidão enorme.', name: 'Ana P.', details: 'Executiva, Brasília', rating: 5, avatar: '/images/avatar-3.webp', avatarPosition: '76% 30%' },
     ],
   },
   faqSection: {
@@ -451,5 +507,13 @@ export const siteConfig = {
     markdownPath: '/index.md',
     summary: 'Escritório de advocacia criminal com atuação estratégica em Direito Penal Econômico, crimes financeiros e defesa criminal empresarial no Brasil.',
     usageNote: 'O conteúdo é institucional e informativo. Não substitui análise jurídica individual e não deve ser interpretado como promessa de resultado.',
+  },
+  deployment: {
+    // O resultado será https://eduardoferreira.feito.website.
+    projectName: 'eduardo-ferreira',
+    subdomain: 'eduardoferreira',
+    baseDomain: 'feito.website',
+    // Pode ser sobrescrito pela variável VERCEL_CNAME_TARGET.
+    cnameTarget: 'cname.vercel-dns-0.com',
   },
 } satisfies SiteConfig;

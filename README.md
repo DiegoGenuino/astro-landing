@@ -61,7 +61,7 @@ Edite `src/config/site.ts` nesta ordem:
 4. `stats`, `about`, `practiceSection` e `differentialsSection`;
 5. `reviewsSection`, `faqSection` e `footer`;
 6. `videoSection` e `locationSection`;
-7. `seo` e `aiDiscovery`.
+7. `seo`, `aiDiscovery` e `deployment`.
 
 O TypeScript valida a estrutura do contrato durante `pnpm build`. Se um campo obrigatório for removido ou estiver com o tipo errado, o build falhará antes da publicação.
 
@@ -107,6 +107,93 @@ aiDiscovery: {
 
 Para vídeo local, use `provider: 'file'`, deixe `videoId` vazio e informe `videoUrl`, por exemplo `/videos/institucional.mp4`. Para remover uma seção opcional sem tocar no layout, altere apenas `enabled` para `false`.
 
+## Avaliações do Google por Place ID
+
+O template usa a Places API (New) durante o build. Não existe dependência da Business Profile API. Configure somente o Place ID público no `site.ts`:
+
+```ts
+reviewsSection: {
+  enabled: true,
+  source: 'google',
+  google: {
+    placeId: 'PLACE_ID_DO_ESCRITORIO',
+    limit: 3,
+    reviewsUrl: 'URL_PUBLICA_DAS_AVALIACOES',
+  },
+  // fallbacks e manualItems permanecem preenchidos
+},
+```
+
+Depois, coloque `GOOGLE_PLACES_API_KEY` no `.env.local` específico do repositório do cliente. Essa é a única credencial que muda entre os sites e nunca deve entrar em `site.ts` ou ser commitada.
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Se a chave, o Place ID, um avatar, a data ou qualquer dado não estiver disponível, o componente usa os fallbacks definidos em `reviewsSection.fallbacks`. Como a Places API não informa profissão nem cidade do autor, esse detalhe recebe `Não disponível`. Se a API falhar ou retornar menos avaliações que o limite, os espaços restantes são preenchidos por `manualItems`, mantendo o layout publicável.
+
+O Google determina a seleção e a ordem das avaliações retornadas; a API não garante as três mais recentes. O site deixa essa condição explícita quando exibe avaliações vindas da API. Para forçar conteúdo e ordem específicos, use `source: 'manual'`.
+
+## Grid de áreas de atuação
+
+O grid se ajusta automaticamente à quantidade de itens em `practiceSection.items`: até quatro colunas no desktop, duas no tablet e uma no celular. Linhas incompletas são redistribuídas de forma equilibrada, portanto três áreas ocupam três colunas e cinco áreas formam uma linha com três cards e outra com dois. Não é necessário alterar CSS ou componentes.
+
+## Deploy automático: Vercel + Cloudflare
+
+O script `pnpm deploy:vercel` executa o build, envia os arquivos estáticos pela API da Vercel, conecta o domínio e cria/atualiza o DNS na Cloudflare. Os dados públicos de cada projeto ficam em `siteConfig.deployment`:
+
+```ts
+deployment: {
+  projectName: 'eduardo-ferreira',
+  subdomain: 'eduardoferreira',
+  baseDomain: 'feito.website',
+  cnameTarget: 'cname.vercel-dns-0.com',
+},
+```
+
+O endereço resultante será `https://eduardoferreira.feito.website`. Atualize também `seo.siteUrl` para esse endereço antes de publicar.
+
+As credenciais de publicação são globais e devem ser configuradas uma única vez no ambiente que executa os deploys — por exemplo, no terminal principal, CI ou serviço de automação. Elas não precisam ser copiadas para cada repositório:
+
+- `VERCEL_TOKEN`: token da sua conta Vercel;
+- `CLOUDFLARE_API_TOKEN`: token com permissão para editar DNS apenas na zona necessária;
+- `CLOUDFLARE_ZONE_ID`: ID da zona `feito.website`.
+
+O arquivo `.env.automation.example` documenta somente essas credenciais globais. Para uma execução local, copie-o como `.env.automation`; em produção, prefira injetá-las pelo ambiente seguro da automação.
+
+`VERCEL_TEAM_ID` não é uma chave nem é obrigatório. Deixe-o vazio para publicar na conta pessoal e informe esse identificador apenas quando migrar para um time. O destino CNAME também não precisa ser fornecido: o script consulta o valor recomendado pela Vercel e usa a configuração pública do `site.ts` somente como fallback.
+
+Em cada novo repositório de cliente, copie apenas `.env.example` para `.env.local` e preencha a chave daquele projeto:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Faça primeiro uma simulação local, que valida a configuração e o build sem chamar APIs externas:
+
+```bash
+pnpm deploy:vercel -- --dry-run
+```
+
+Depois das chaves configuradas:
+
+```bash
+pnpm deploy:vercel
+```
+
+Opções adicionais:
+
+- `--skip-build`: reutiliza uma pasta `dist` já gerada;
+- `--skip-domain`: publica na Vercel sem alterar Cloudflare ou domínio personalizado.
+
+### Configuração única do domínio
+
+Para automatizar cada subdomínio, mantenha a zona DNS de `feito.website` na Cloudflare. A troca dos nameservers é feita uma única vez no registrador atual. Antes da mudança, replique na Cloudflare todos os registros existentes que sejam importantes, principalmente MX, SPF, DKIM e DMARC usados por e-mail. Depois disso, o script cria cada novo subdomínio sem ajustes manuais na Hostinger.
+
+O token da Cloudflare deve ser restrito à edição de DNS dessa zona. Na fase inicial, `VERCEL_TEAM_ID` vazio publica na conta pessoal. Quando houver um time, basta preencher a variável; o código e o fluxo permanecem iguais.
+
+O script pode criar e conectar o projeto automaticamente, mas não deve ser executado antes de as chaves e os dados do domínio estarem corretos. Nenhum segredo deve ser commitado.
+
 ## SEO e descoberta por agentes de IA
 
 O conteúdo de `siteConfig` alimenta automaticamente:
@@ -143,6 +230,8 @@ pnpm install
 pnpm dev
 pnpm build
 pnpm preview
+pnpm test:reviews
+pnpm deploy:vercel -- --dry-run
 ```
 
 `pnpm build` executa primeiro a checagem de tipos do Astro e depois gera o site estático em `dist`.

@@ -30,7 +30,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
     {videoSectionEnabled && <VideoSection {...videoSectionProps} />}
     <PracticeGrid />
     <Differentials />
-    <Reviews />
+    {siteConfig.reviewsSection.enabled && <Reviews />}
     <FAQ />
     {locationSectionEnabled && <LocationSection {...locationSectionProps} />}
   </main>
