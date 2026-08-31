@@ -38,11 +38,6 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
   <Footer />
 
   <script>
-    import { gsap } from 'gsap';
-    import { SplitText } from 'gsap/SplitText';
-
-    gsap.registerPlugin(SplitText);
-
     const header = document.querySelector<HTMLElement>('[data-header]');
     const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
     const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
@@ -105,75 +100,106 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    type AnimationTools = {
+      gsap: (typeof import('gsap'))['gsap'];
+      SplitText: (typeof import('gsap/SplitText'))['SplitText'];
+    };
+
+    let animationToolsPromise: Promise<AnimationTools> | undefined;
+    const loadAnimationTools = () => {
+      animationToolsPromise ??= Promise.all([
+        import('gsap'),
+        import('gsap/SplitText'),
+      ]).then(([gsapModule, splitTextModule]) => {
+        const { gsap } = gsapModule;
+        const { SplitText } = splitTextModule;
+        gsap.registerPlugin(SplitText);
+        return { gsap, SplitText };
+      });
+
+      return animationToolsPromise;
+    };
+
     const heroHeadline = document.querySelector<HTMLElement>('[data-hero-headline]');
     const heroDescription = document.querySelector<HTMLElement>('[data-hero-description]');
 
     if (heroHeadline && heroDescription && !reduceMotion) {
-      const initializeHeroText = () => {
-        SplitText.create(heroHeadline, {
-          type: 'words,chars',
-          mask: 'chars',
-          charsClass: 'hero-char',
-          wordsClass: 'hero-word',
-          aria: 'auto',
-          onSplit(self) {
-            gsap.set(heroHeadline, { visibility: 'visible' });
-            return gsap.from(self.chars, {
-              yPercent: 108,
-              autoAlpha: 0,
-              filter: 'blur(8px)',
-              rotationX: -24,
-              transformOrigin: '50% 100%',
-              willChange: 'transform,opacity,filter',
-              duration: .78,
-              delay: .12,
-              stagger: { each: .016, from: 'start' },
-              ease: 'power4.out',
-              onComplete: () => gsap.set(self.chars, { clearProps: 'willChange' }),
-            });
-          },
-        });
+      const initializeHeroText = async () => {
+        const { gsap, SplitText } = await loadAnimationTools();
 
-        SplitText.create(heroDescription, {
-          type: 'lines',
-          mask: 'lines',
-          linesClass: 'hero-line',
-          autoSplit: true,
-          aria: 'auto',
-          onSplit(self) {
-            gsap.set(heroDescription, { visibility: 'visible' });
-            return gsap.from(self.lines, {
-              yPercent: 105,
-              autoAlpha: 0,
-              filter: 'blur(6px)',
-              willChange: 'transform,opacity,filter',
-              duration: .72,
-              delay: 1.02,
-              stagger: .11,
-              ease: 'power3.out',
-              onComplete: () => gsap.set(self.lines, { clearProps: 'willChange' }),
-            });
-          },
-        });
+        SplitText.create(heroHeadline, {
+            type: 'words,chars',
+            mask: 'chars',
+            charsClass: 'hero-char',
+            wordsClass: 'hero-word',
+            aria: 'auto',
+            onSplit(self) {
+              gsap.set(heroHeadline, { visibility: 'visible' });
+              return gsap.from(self.chars, {
+                yPercent: 108,
+                autoAlpha: 0,
+                filter: 'blur(8px)',
+                rotationX: -24,
+                transformOrigin: '50% 100%',
+                willChange: 'transform,opacity,filter',
+                duration: .78,
+                delay: .12,
+                stagger: { each: .016, from: 'start' },
+                ease: 'power4.out',
+                onComplete: () => gsap.set(self.chars, { clearProps: 'willChange' }),
+              });
+            },
+          });
+
+          SplitText.create(heroDescription, {
+            type: 'lines',
+            mask: 'lines',
+            linesClass: 'hero-line',
+            autoSplit: true,
+            aria: 'auto',
+            onSplit(self) {
+              gsap.set(heroDescription, { visibility: 'visible' });
+              return gsap.from(self.lines, {
+                yPercent: 105,
+                autoAlpha: 0,
+                filter: 'blur(6px)',
+                willChange: 'transform,opacity,filter',
+                duration: .72,
+                delay: 1.02,
+                stagger: .11,
+                ease: 'power3.out',
+                onComplete: () => gsap.set(self.lines, { clearProps: 'willChange' }),
+              });
+            },
+          });
       };
 
-      initializeHeroText();
+      window.requestAnimationFrame(() => {
+        initializeHeroText().catch(() => {
+          heroHeadline.style.visibility = 'visible';
+          heroDescription.style.visibility = 'visible';
+        });
+      });
     } else {
-      gsap.set([heroHeadline, heroDescription], { visibility: 'visible' });
+      if (heroHeadline) heroHeadline.style.visibility = 'visible';
+      if (heroDescription) heroDescription.style.visibility = 'visible';
     }
 
     const spotlightElements = [...document.querySelectorAll<HTMLElement>('.spotlight-text')];
 
-    const initializeSpotlightText = async () => {
-      if (reduceMotion) {
-        gsap.set(spotlightElements, { visibility: 'visible' });
-        return;
-      }
-
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-      gsap.registerPlugin(ScrollTrigger);
-
+    if (reduceMotion) {
       spotlightElements.forEach((element) => {
+        element.style.visibility = 'visible';
+      });
+    } else {
+      const spotlightObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const element = entry.target as HTMLElement;
+          spotlightObserver.unobserve(element);
+
+          loadAnimationTools().then(({ gsap, SplitText }) => {
         const split = SplitText.create(element, {
           type: 'words,chars',
           charsClass: 'spotlight-char',
@@ -191,18 +217,15 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
           duration: .4,
           ease: 'power2.out',
           onComplete: () => gsap.set(split.chars, { clearProps: 'willChange' }),
-          scrollTrigger: {
-            trigger: element,
-            start: 'top 88%',
-            once: true,
-          },
         });
-      });
-    };
+          }).catch(() => {
+            element.style.visibility = 'visible';
+          });
+        });
+      }, { threshold: 0.05, rootMargin: '0px 0px -8% 0px' });
 
-    initializeSpotlightText().catch(() => {
-      gsap.set(spotlightElements, { visibility: 'visible' });
-    });
+      spotlightElements.forEach((element) => spotlightObserver.observe(element));
+    }
 
     const faqItems = [...document.querySelectorAll<HTMLDetailsElement>('[data-faq-list] details')];
     let faqIsTransitioning = false;
@@ -278,7 +301,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
       let activeIndex = Math.max(0, tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true'));
       let transitionVersion = 0;
 
-      const activateSlide = (index: number, focus = false) => {
+      const activateSlide = async (index: number, focus = false) => {
         if (!tabs[index] || !slides[index]) return;
 
         tabs.forEach((tab, tabIndex) => {
@@ -299,6 +322,22 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
         const direction = index > previousIndex ? 1 : -1;
         const version = ++transitionVersion;
         activeIndex = index;
+
+        if (reduceMotion) {
+          slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle('is-active', slideIndex === index);
+            slide.hidden = slideIndex !== index;
+          });
+          if (stage) {
+            stage.style.removeProperty('height');
+            stage.style.removeProperty('overflow');
+            stage.style.removeProperty('will-change');
+          }
+          return;
+        }
+
+        const { gsap } = await loadAnimationTools();
+        if (version !== transitionVersion) return;
         let currentStageHeight = 0;
 
         if (stage) {
@@ -334,16 +373,6 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
           stage.style.height = `${currentStageHeight}px`;
           stage.style.overflow = 'hidden';
           stage.style.willChange = 'height';
-        }
-
-        if (reduceMotion) {
-          outgoing.hidden = true;
-          if (stage) {
-            stage.style.removeProperty('height');
-            stage.style.removeProperty('overflow');
-            stage.style.removeProperty('will-change');
-          }
-          return;
         }
 
         if (stage) {
@@ -477,7 +506,10 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
       });
     });
 
-    const scrollTextBlocks = [...document.querySelectorAll<HTMLElement>('[data-scroll-text]')];
+    const scrollTextBlocks = [...document.querySelectorAll<HTMLElement>('[data-scroll-text]')].map((block) => ({
+      block,
+      words: [...block.querySelectorAll<HTMLElement>('.reveal-word')],
+    }));
 
     if (scrollTextBlocks.length && !reduceMotion) {
       document.documentElement.classList.add('has-scroll-reveal');
@@ -485,9 +517,12 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
 
       const updateScrollText = () => {
         scrollTextFrame = 0;
-        scrollTextBlocks.forEach((block) => {
-          const words = [...block.querySelectorAll<HTMLElement>('.reveal-word')];
-          const blockTop = block.getBoundingClientRect().top;
+        const measurements = scrollTextBlocks.map(({ block, words }) => ({
+          words,
+          blockTop: block.getBoundingClientRect().top,
+        }));
+
+        measurements.forEach(({ words, blockTop }) => {
           const revealStart = window.innerHeight * 0.84;
           const revealEnd = window.innerHeight * 0.3;
           const progress = Math.min(1, Math.max(0, (revealStart - blockTop) / (revealStart - revealEnd)));
@@ -507,7 +542,7 @@ const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.
 
       window.addEventListener('scroll', requestScrollTextUpdate, { passive: true });
       window.addEventListener('resize', requestScrollTextUpdate, { passive: true });
-      updateScrollText();
+      window.requestAnimationFrame(updateScrollText);
     }
 
     const observer = new IntersectionObserver((entries) => {

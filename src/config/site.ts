@@ -106,7 +106,7 @@ export const siteConfig: SiteConfig = {
     provider: 'youtube',
     videoId: 'EeUu8C_VLAc',
     videoUrl: '',
-    poster: 'https://i.ytimg.com/vi/EeUu8C_VLAc/maxresdefault.jpg',
+    poster: '/images/video-poster.webp',
     posterAlt: 'Capa do vídeo institucional',
     playLabel: 'Assistir apresentação',
     caption: 'Vídeo institucional',

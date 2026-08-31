@@ -7,6 +7,11 @@ export default defineConfig({
   output: 'static',
   compressHTML: true,
   integrations: [icon()],
+  build: {
+    // The site has a single critical stylesheet; inlining avoids an extra
+    // render-blocking request without changing the visual cascade.
+    inlineStylesheets: 'always',
+  },
   vite: {
     build: {
       cssMinify: true,
