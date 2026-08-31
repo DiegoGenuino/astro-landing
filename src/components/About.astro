@@ -2,36 +2,38 @@
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config/site';
 
-const bioText = siteConfig.seo.professionalDescription;
+const { about, identity } = siteConfig;
+const bioText = identity.professionalDescription;
 const bioWords = bioText.split(' ');
+const aboutSrcset = about.image.srcset.map(({ src, width }) => `${src} ${width}w`).join(', ');
 ---
 
-<section class="section about" id="sobre">
+<section class="section about" id={about.id}>
   <div class="container about-grid">
     <figure class="profile-card" data-reveal>
       <picture>
         <source
           type="image/webp"
-          srcset="/images/eduardo-ferreira-560.webp 560w, /images/eduardo-ferreira-1122.webp 1122w"
-          sizes="(max-width: 780px) calc(100vw - 34px), 392px"
+          srcset={aboutSrcset}
+          sizes={about.image.sizes}
         />
         <img
-          src="/images/eduardo-ferreira-560.webp"
-          width="560"
-          height="700"
-          alt="Dr. Eduardo Ferreira, advogado criminalista"
+          src={about.image.src}
+          width={about.image.width}
+          height={about.image.height}
+          alt={about.image.alt}
           loading="lazy"
           decoding="async"
         />
       </picture>
       <figcaption>
-        <span>Dr. Eduardo Ferreira</span>
-        <small>Criminalista | nº 000.000</small>
+        <span>{about.cardName}</span>
+        <small>{about.cardDetail}</small>
       </figcaption>
     </figure>
 
     <div class="about-copy" data-reveal>
-      <p class="section-kicker spotlight-text">Dr. Eduardo Ferreira</p>
+      <p class="section-kicker spotlight-text">{about.eyebrow}</p>
       <p class="about-bio" data-scroll-text>
         <span class="sr-only">{bioText}</span>
         {bioWords.map((word, index) => (
@@ -39,9 +41,7 @@ const bioWords = bioText.split(' ');
         ))}
       </p>
       <ul class="credentials">
-        <li><Icon name="lucide:circle-check" aria-hidden="true" /><span>OAB/SP nº 000.000 — inscrito desde 2009</span></li>
-        <li><Icon name="lucide:circle-check" aria-hidden="true" /><span>Pós-graduado em Direito Penal Econômico — FGV Direito SP</span></li>
-        <li><Icon name="lucide:circle-check" aria-hidden="true" /><span>Membro da Comissão de Direito Penal Econômico OAB/SP</span></li>
+        {about.credentials.map((credential) => <li><Icon name={credential.icon} aria-hidden="true" /><span>{credential.text}</span></li>)}
       </ul>
     </div>
   </div>

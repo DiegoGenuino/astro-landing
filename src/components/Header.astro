@@ -1,36 +1,33 @@
 ---
 import ArrowUpRightIcon from '@/components/ArrowUpRightIcon.astro';
+import { siteConfig } from '@/config/site';
 
-const links = [
-  { href: '#sobre', label: 'Quem somos' },
-  { href: '#especialidades', label: 'Especialidades' },
-  { href: '#diferenciais', label: 'Por que nós' },
-  { href: '#faq', label: 'Dúvidas' },
-];
+const { contact, header, identity } = siteConfig;
+const { logo } = identity;
 ---
 
 <header class="site-header" data-header>
   <div class="nav-shell">
-    <a class="brand" href="#inicio" aria-label="Ferreira Defesa — início">
-      <img class="brand-logo" src="/images/eduardo-ferreira-logo.svg" width="165" height="12" alt="" />
+    <a class="brand" href={header.brandHref} aria-label={header.brandLabel}>
+      <img class="brand-logo" src={logo.src} width={logo.width} height={logo.height} alt="" />
     </a>
 
-    <nav class="desktop-nav" aria-label="Navegação principal">
-      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    <nav class="desktop-nav" aria-label={header.primaryNavigationLabel}>
+      {header.links.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
 
-    <a class="nav-cta" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer">
-      Falar com especialista
+    <a class="nav-cta" href={contact.whatsappUrl} target="_blank" rel="noreferrer">
+      {contact.primaryCtaLabel}
       <span aria-hidden="true"><ArrowUpRightIcon /></span>
     </a>
 
-    <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+    <button class="menu-toggle" type="button" aria-label={header.menuOpenLabel} aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
       <span></span><span></span>
     </button>
   </div>
 
-  <nav class="mobile-nav" id="mobile-menu" aria-label="Navegação mobile" data-mobile-menu>
-    {links.map((link) => <a href={link.href}>{link.label}</a>)}
-    <a class="button button-primary" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer">Falar com especialista <ArrowUpRightIcon /></a>
+  <nav class="mobile-nav" id="mobile-menu" aria-label={header.mobileNavigationLabel} data-mobile-menu>
+    {header.links.map((link) => <a href={link.href}>{link.label}</a>)}
+    <a class="button button-primary" href={contact.whatsappUrl} target="_blank" rel="noreferrer">{contact.primaryCtaLabel} <ArrowUpRightIcon /></a>
   </nav>
 </header>

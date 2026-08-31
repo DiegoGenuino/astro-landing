@@ -1,52 +1,54 @@
 ---
 import { Icon } from 'astro-icon/components';
 import WhatsAppIcon from '@/components/WhatsAppIcon.astro';
+import { siteConfig } from '@/config/site';
+
+const { contact, footer, identity } = siteConfig;
+const { logo } = identity;
+const { whatsapp } = footer;
 ---
 
 <footer class="footer">
   <div class="container footer-cta" data-reveal>
     <div>
-      <p class="section-kicker spotlight-text">Atendimento imediato e sigiloso</p>
-      <h2 class="spotlight-text">Seu caso exige uma defesa<br /><span>à altura.</span></h2>
+      <p class="section-kicker spotlight-text">{footer.eyebrow}</p>
+      <h2 class="spotlight-text">{footer.title}<br /><span>{footer.highlightedTitle}</span></h2>
     </div>
-    <a class="button button-primary button-large" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer"><WhatsAppIcon /> Falar com especialista</a>
+    <a class="button button-primary button-large" href={contact.whatsappUrl} target="_blank" rel="noreferrer"><WhatsAppIcon /> {contact.primaryCtaLabel}</a>
   </div>
   <div class="container footer-main">
     <div class="footer-brand">
-      <img class="brand-logo" src="/images/eduardo-ferreira-logo.svg" width="165" height="12" alt="Eduardo Ferreira" />
+      <img class="brand-logo" src={logo.src} width={logo.width} height={logo.height} alt={logo.alt} />
     </div>
-    <p class="spotlight-text">Atuação estratégica em Direito Penal Econômico, com discrição, profundidade técnica e acompanhamento pessoal.</p>
+    <p class="spotlight-text">{footer.description}</p>
     <div class="footer-links">
-      <a href="#sobre">Quem somos</a>
-      <a href="#especialidades">Especialidades</a>
-      <a href="#diferenciais">Diferenciais</a>
-      <a href="#faq">Dúvidas</a>
+      {footer.links.map((link) => <a href={link.href}>{link.label}</a>)}
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© {new Date().getFullYear()} Ferreira Defesa. Todos os direitos reservados.</span>
-    <span>OAB/SP nº 000.000</span>
-    <a href="#inicio">Voltar ao topo <Icon name="lucide:arrow-up" aria-hidden="true" /></a>
+    <span>© {new Date().getFullYear()} {identity.siteName}. {footer.copyrightSuffix}</span>
+    <span>{identity.registration}</span>
+    <a href={footer.backToTopHref}>{footer.backToTopLabel} <Icon name="lucide:arrow-up" aria-hidden="true" /></a>
   </div>
 </footer>
 
-<aside class="whatsapp-contact" data-whatsapp-contact aria-label="Atendimento pelo WhatsApp">
+<aside class="whatsapp-contact" data-whatsapp-contact aria-label={whatsapp.regionLabel}>
   <div class="whatsapp-invite" id="whatsapp-menu" data-whatsapp-invite>
-    <button class="whatsapp-invite-close" type="button" aria-label="Fechar convite" data-whatsapp-close>
+    <button class="whatsapp-invite-close" type="button" aria-label={whatsapp.closeLabel} data-whatsapp-close>
       <Icon name="lucide:x" aria-hidden="true" />
     </button>
-    <img src="/images/eduardo-ferreira-560.webp" width="48" height="48" alt="" loading="lazy" decoding="async" />
+    <img src={whatsapp.image.src} width={whatsapp.image.width} height={whatsapp.image.height} alt={whatsapp.image.alt} loading="lazy" decoding="async" />
     <div>
-      <strong>Dr. Eduardo Ferreira</strong>
-      <p>Olá! Precisa de orientação? Vamos conversar pelo WhatsApp.</p>
+      <strong>{whatsapp.senderName}</strong>
+      <p>{whatsapp.message}</p>
     </div>
-    <a class="whatsapp-invite-action" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer">
+    <a class="whatsapp-invite-action" href={contact.whatsappUrl} target="_blank" rel="noreferrer">
       <WhatsAppIcon />
-      Iniciar conversa
+      {whatsapp.actionLabel}
     </a>
   </div>
 
-  <button class="floating-whatsapp" type="button" aria-label="Abrir atendimento pelo WhatsApp" aria-expanded="false" aria-controls="whatsapp-menu">
+  <button class="floating-whatsapp" type="button" aria-label={whatsapp.buttonLabel} aria-expanded="false" aria-controls="whatsapp-menu">
     <WhatsAppIcon />
   </button>
 </aside>

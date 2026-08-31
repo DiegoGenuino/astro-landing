@@ -12,16 +12,15 @@ import FAQ from '@/components/FAQ.astro';
 import LocationSection from '@/components/LocationSection.astro';
 import Footer from '@/components/Footer.astro';
 import { siteConfig } from '@/config/site';
-import { faqItems } from '@/data/faqs';
 
 const { enabled: videoSectionEnabled, ...videoSectionProps } = siteConfig.videoSection;
 const { enabled: locationSectionEnabled, ...locationSectionProps } = siteConfig.locationSection;
 ---
 
 <BaseLayout
-  title="Defesa em Crimes Financeiros e Corrupção"
+  title={siteConfig.seo.homePageTitle}
   description={siteConfig.seo.defaultDescription}
-  faqItems={faqItems}
+  faqItems={siteConfig.faqSection.items}
 >
   <Header />
   <main>

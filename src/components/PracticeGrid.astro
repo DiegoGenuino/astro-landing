@@ -1,28 +1,18 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config/site';
 
-const practices = [
-  ['lucide:credit-card', 'Lavagem de dinheiro'],
-  ['lucide:file-text', 'Crimes Tributários'],
-  ['lucide:credit-card', 'Corrupção e Improbidade'],
-  ['lucide:credit-card', 'Fraudes Bancárias'],
-  ['lucide:credit-card', 'Evasão de Divisas'],
-  ['lucide:credit-card', 'Crimes Financeiros'],
-  ['lucide:credit-card', 'Gestão Fraudulenta'],
-  ['lucide:credit-card', 'Prevenção Corporativa'],
-];
-
-const description = 'Defesa em todas as fases — inquérito, ação penal e recursos — em casos de ocultação e dissimulação de ativos.';
+const section = siteConfig.practiceSection;
 ---
 
-<section class="section practices" id="especialidades">
+<section class="section practices" id={section.id}>
   <div class="container">
     <div class="section-heading" data-reveal>
-      <h2 class="spotlight-text">Crimes que defendemos<br />com <span>excelência</span></h2>
-      <p class="spotlight-text">Atuação técnica e especializada nas práticas mais complexas do Direito Penal Econômico. Cada área com histórico sólido de resultados.</p>
+      <h2 class="spotlight-text">{section.title}<br />com <span>{section.highlightedTitle}</span></h2>
+      <p class="spotlight-text">{section.description}</p>
     </div>
     <div class="practice-grid">
-      {practices.map(([icon, title]) => (
+      {section.items.map(({ icon, title, description }) => (
         <article class="practice-card" data-reveal>
           <span class="practice-icon" aria-hidden="true"><Icon name={icon} /></span>
           <h3 class="spotlight-text">{title}</h3>

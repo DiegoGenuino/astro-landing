@@ -1,21 +1,25 @@
 ---
 import { Icon } from 'astro-icon/components';
 import WhatsAppIcon from '@/components/WhatsAppIcon.astro';
+import { siteConfig } from '@/config/site';
+
+const { contact, hero } = siteConfig;
+const heroSrcset = hero.image.srcset.map(({ src, width }) => `${src} ${width}w`).join(', ');
 ---
 
-<section class="hero" id="inicio" aria-labelledby="hero-title">
+<section class="hero" id={hero.id} aria-labelledby="hero-title">
   <div class="hero-media" aria-hidden="true">
     <picture>
       <source
         type="image/webp"
-        srcset="/images/hero-legal-960.webp 960w, /images/hero-legal-1672.webp 1672w"
-        sizes="100vw"
+        srcset={heroSrcset}
+        sizes={hero.image.sizes}
       />
       <img
-        src="/images/hero-legal-1672.webp"
-        width="1672"
-        height="942"
-        alt=""
+        src={hero.image.src}
+        width={hero.image.width}
+        height={hero.image.height}
+        alt={hero.image.alt}
         loading="eager"
         decoding="async"
         fetchpriority="high"
@@ -25,21 +29,21 @@ import WhatsAppIcon from '@/components/WhatsAppIcon.astro';
   <div class="container hero-inner">
     <div class="hero-copy">
       <div class="trust-pill">
-        <span class="trust-avatars" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span>100% clientes atendidos com excelência</span>
+        <span class="trust-avatars" aria-hidden="true">{hero.trust.avatars.map((avatar) => <i style={`background-image: url("${avatar}")`}></i>)}</span>
+        <span>{hero.trust.text}</span>
       </div>
-      <h1 id="hero-title" data-hero-headline>Defesa Estratégica em <em>Crimes Financeiros</em> e <em>Corrupção</em></h1>
-      <p class="hero-lead" data-hero-description>Atuação técnica e estratégica na defesa de empresários, executivos e pessoas investigadas em crimes financeiros complexos.</p>
+      <h1 id="hero-title" data-hero-headline>{hero.title.map((part) => part.highlighted ? <em>{part.text}</em> : part.text)}</h1>
+      <p class="hero-lead" data-hero-description>{hero.description}</p>
       <div class="hero-actions">
-        <a class="button button-primary button-large" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer">
+        <a class="button button-primary button-large" href={contact.whatsappUrl} target="_blank" rel="noreferrer">
           <WhatsAppIcon />
-          Quero defesa de alto nível
+          {hero.primaryCtaLabel}
         </a>
-        <a class="text-link" href="#sobre">Conheça nossa atuação <Icon name="lucide:arrow-down" aria-hidden="true" /></a>
+        <a class="text-link" href={hero.secondaryCta.href}>{hero.secondaryCta.label} <Icon name="lucide:arrow-down" aria-hidden="true" /></a>
       </div>
     </div>
   </div>
-  <a class="scroll-cue" href="#numeros" aria-label="Ir para os números"><span></span></a>
+  <a class="scroll-cue" href={hero.scrollTarget} aria-label={hero.scrollLabel}><span></span></a>
 </section>
 
 <noscript>

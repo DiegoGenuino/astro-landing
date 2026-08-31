@@ -1,11 +1,10 @@
 import type { APIRoute } from 'astro';
 import { siteConfig } from '@/config/site';
-import { faqItems } from '@/data/faqs';
 
 export const prerender = true;
 
 export const GET: APIRoute = () => {
-  const { aiDiscovery, locationSection, seo } = siteConfig;
+  const { aiDiscovery, faqSection, identity, locationSection, seo } = siteConfig;
 
   if (!aiDiscovery.enabled) {
     return new Response('Not found', { status: 404 });
@@ -13,11 +12,11 @@ export const GET: APIRoute = () => {
 
   const siteUrl = seo.siteUrl.replace(/\/$/, '');
   const areas = seo.knowsAbout.map((area) => `- ${area}`).join('\n');
-  const faqs = faqItems
+  const faqs = faqSection.items
     .map(({ question, answer }) => `### ${question}\n\n${answer}`)
     .join('\n\n');
 
-  const body = `# ${seo.siteName}
+  const body = `# ${identity.siteName}
 
 > ${aiDiscovery.summary}
 
@@ -25,15 +24,15 @@ export const GET: APIRoute = () => {
 
 ${seo.defaultDescription}
 
-A ${seo.legalName} atua em ${seo.areaServed}, com atendimento técnico, pessoal e sigiloso. ${aiDiscovery.usageNote}
+A ${identity.legalName} atua em ${seo.areaServed}, com atendimento técnico, pessoal e sigiloso. ${aiDiscovery.usageNote}
 
 ## Profissional responsável
 
-### ${seo.professionalName}
+### ${identity.professionalName}
 
-**Atuação:** ${seo.professionalRole}.
+**Atuação:** ${identity.professionalRole}.
 
-${seo.professionalDescription}
+${identity.professionalDescription}
 
 ## Áreas de atuação
 

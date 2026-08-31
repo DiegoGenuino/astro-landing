@@ -1,6 +1,6 @@
 ---
 import { siteConfig } from '@/config/site';
-import type { FaqItem } from '@/data/faqs';
+import type { FaqItem } from '@/config/site';
 
 export interface Props {
   title?: string;
@@ -25,12 +25,13 @@ const {
 } = Astro.props;
 
 const seo = siteConfig.seo;
+const identity = siteConfig.identity;
 const aiDiscovery = siteConfig.aiDiscovery;
 const resolvedTitle = title ? seo.titleTemplate.replace('%s', title) : seo.defaultTitle;
 const canonicalUrl = new URL(canonical || Astro.url.pathname, seo.siteUrl).toString();
 const imageUrl = new URL(image, seo.siteUrl).toString();
-const logoUrl = new URL(seo.logo, seo.siteUrl).toString();
-const professionalImageUrl = new URL(seo.professionalImage, seo.siteUrl).toString();
+const logoUrl = new URL(identity.logo.src, seo.siteUrl).toString();
+const professionalImageUrl = new URL(identity.professionalImage, seo.siteUrl).toString();
 const llmsUrl = new URL(aiDiscovery.llmsPath, seo.siteUrl).toString();
 const markdownUrl = new URL(aiDiscovery.markdownPath, seo.siteUrl).toString();
 const robotsContent = noindex
@@ -42,7 +43,7 @@ const structuredData: Record<string, unknown>[] = [
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${seo.siteUrl}/#website`,
-    name: seo.siteName,
+    name: identity.siteName,
     url: seo.siteUrl,
     inLanguage: seo.language,
   },
@@ -50,7 +51,7 @@ const structuredData: Record<string, unknown>[] = [
     '@context': 'https://schema.org',
     '@type': 'LegalService',
     '@id': `${seo.siteUrl}/#legal-service`,
-    name: seo.legalName,
+    name: identity.legalName,
     url: seo.siteUrl,
     logo: logoUrl,
     image: imageUrl,
@@ -62,9 +63,9 @@ const structuredData: Record<string, unknown>[] = [
     '@context': 'https://schema.org',
     '@type': 'Person',
     '@id': `${seo.siteUrl}/#professional`,
-    name: seo.professionalName,
-    jobTitle: seo.professionalRole,
-    description: seo.professionalDescription,
+    name: identity.professionalName,
+    jobTitle: identity.professionalRole,
+    description: identity.professionalDescription,
     image: professionalImageUrl,
     worksFor: { '@id': `${seo.siteUrl}/#legal-service` },
     knowsAbout: seo.knowsAbout,
@@ -100,7 +101,7 @@ const serializedStructuredData = JSON.stringify(structuredData).replace(/</g, '\
 
 <title>{resolvedTitle}</title>
 <meta name="description" content={description} />
-<meta name="author" content={seo.author} />
+<meta name="author" content={identity.siteName} />
 <meta name="keywords" content={seo.keywords.join(', ')} />
 <meta name="robots" content={robotsContent} />
 <meta name="googlebot" content={robotsContent} />
@@ -110,7 +111,7 @@ const serializedStructuredData = JSON.stringify(structuredData).replace(/</g, '\
 {aiDiscovery.enabled && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
 {aiDiscovery.enabled && <link rel="describedby" type="text/plain" href={llmsUrl} />}
 
-<meta property="og:site_name" content={seo.siteName} />
+<meta property="og:site_name" content={identity.siteName} />
 <meta property="og:locale" content={seo.locale} />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={resolvedTitle} />

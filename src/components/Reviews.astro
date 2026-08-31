@@ -1,48 +1,29 @@
 ---
-const reviews = [
-  {
-    quote: 'Excelente advogado, resolveu meu caso com rapidez e precisão. A atenção pessoal que recebi foi diferencial — nunca me senti desamparado durante o processo.',
-    name: 'Carlos M.',
-    details: 'Empresário, São Paulo',
-    avatar: '/images/avatar-1.webp',
-    position: 'center 15%',
-  },
-  {
-    quote: 'Profissionalismo acima de tudo. Quando a situação parecia sem saída, a equipe encontrou uma tese que virou o jogo. Recomendo sem hesitar.',
-    name: 'Ricardo T.',
-    details: 'Diretor Financeiro, Rio de Janeiro',
-    avatar: '/images/avatar-2.webp',
-    position: '62% 24%',
-  },
-  {
-    quote: 'O sigilo e a atenção ao cliente são reais. Cada dúvida foi respondida com clareza. Resultado: processo encerrado sem condenação. Gratidão enorme.',
-    name: 'Ana P.',
-    details: 'Executiva, Brasília',
-    avatar: '/images/avatar-3.webp',
-    position: '76% 30%',
-  },
-];
+import { siteConfig } from '@/config/site';
+
+const section = siteConfig.reviewsSection;
+const { platformLogo } = section;
 ---
 
-<section class="section reviews" id="avaliacoes" aria-labelledby="reviews-title">
+<section class="section reviews" id={section.id} aria-labelledby="reviews-title">
   <div class="container reviews-shell">
     <header class="reviews-heading" data-reveal>
-      <img src="/images/google-icon.png" width="41" height="41" alt="Google" loading="lazy" decoding="async" />
-      <h2 class="spotlight-text" id="reviews-title">O que nossos clientes <span>dizem</span></h2>
+      <img src={platformLogo.src} width={platformLogo.width} height={platformLogo.height} alt={platformLogo.alt} loading="lazy" decoding="async" />
+      <h2 class="spotlight-text" id="reviews-title">{section.title} <span>{section.highlightedTitle}</span></h2>
     </header>
 
     <div class="reviews-grid">
-      {reviews.map((review, index) => (
+      {section.items.map((review, index) => (
         <article class="review-card" data-reveal style={`--review-delay: ${index * 90}ms`}>
           <div class="review-top">
-            <div class="review-stars" role="img" aria-label="5 de 5 estrelas">
-              {Array.from({ length: 5 }).map(() => (
+            <div class="review-stars" role="img" aria-label={section.ratingLabel}>
+              {Array.from({ length: section.rating }).map(() => (
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M15.9613 6.20645L11.4983 5.55782L9.50314 1.51309C9.44864 1.40235 9.359 1.3127 9.24825 1.25821C8.97052 1.1211 8.63302 1.23536 8.49415 1.51309L6.49903 5.55782L2.03595 6.20645C1.9129 6.22403 1.8004 6.28204 1.71427 6.36993C1.61014 6.47695 1.55276 6.62094 1.55474 6.77026C1.55671 6.91957 1.61789 7.06199 1.72482 7.16622L4.95392 10.3145L4.19103 14.76C4.17314 14.8634 4.18458 14.9697 4.22406 15.067C4.26354 15.1642 4.32947 15.2484 4.41439 15.3101C4.4993 15.3718 4.5998 15.4084 4.70448 15.4159C4.80917 15.4234 4.91385 15.4014 5.00665 15.3523L8.99864 13.2535L12.9906 15.3523C13.0996 15.4104 13.2262 15.4297 13.3475 15.4086C13.6533 15.3559 13.859 15.0658 13.8063 14.76L13.0434 10.3145L16.2725 7.16622C16.3604 7.08008 16.4184 6.96758 16.4359 6.84454C16.4834 6.53692 16.269 6.25215 15.9613 6.20645Z" fill="#F6BB06"></path>
                 </svg>
               ))}
             </div>
-            <img class="review-google" src="/images/google-icon.png" width="41" height="41" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+            <img class="review-google" src={platformLogo.src} width={platformLogo.width} height={platformLogo.height} alt="" aria-hidden="true" loading="lazy" decoding="async" />
           </div>
 
           <blockquote>
@@ -50,7 +31,7 @@ const reviews = [
           </blockquote>
 
           <footer class="review-author">
-            <img src={review.avatar} width="34" height="34" alt="" style={`object-position: ${review.position}`} loading="lazy" decoding="async" />
+            <img src={review.avatar} width="34" height="34" alt="" style={`object-position: ${review.avatarPosition}`} loading="lazy" decoding="async" />
             <div>
               <strong>{review.name}</strong>
               <span>{review.details}</span>

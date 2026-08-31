@@ -1,50 +1,20 @@
 ---
 import { Icon } from 'astro-icon/components';
 import ArrowUpRightIcon from '@/components/ArrowUpRightIcon.astro';
+import { siteConfig } from '@/config/site';
 
-const slides = [
-  {
-    icon: 'lucide:badge-check',
-    title: 'Atuação exclusiva em crimes financeiros',
-    description: 'Especialização total garante maior profundidade jurídica e estratégias mais eficazes para delitos econômicos complexos.',
-  },
-  {
-    icon: 'lucide:scale',
-    title: 'Equipe técnica em Direito Penal Econômico',
-    description: 'Conhecimento especializado para conduzir investigações e processos sensíveis com precisão em cada etapa.',
-  },
-  {
-    icon: 'lucide:user-round-check',
-    title: 'Atendimento direto com o advogado responsável',
-    description: 'Contato próximo com quem lidera a estratégia, garantindo decisões rápidas, claras e plenamente informadas.',
-  },
-  {
-    icon: 'lucide:lock-keyhole',
-    title: 'Sigilo profissional absoluto e ética inabalável',
-    description: 'Proteção rigorosa de informações, documentos e decisões em todas as fases do atendimento jurídico.',
-  },
-  {
-    icon: 'lucide:book-open-check',
-    title: 'Estratégias alinhadas às jurisprudências recentes',
-    description: 'Atualização contínua para construir teses consistentes e adequadas ao cenário jurídico de cada caso.',
-  },
-  {
-    icon: 'lucide:messages-square',
-    title: 'Comunicação clara e acompanhamento contínuo',
-    description: 'Você acompanha o andamento do caso com orientações objetivas, retorno próximo e transparência.',
-  },
-];
+const { contact, differentialsSection: section } = siteConfig;
 ---
 
-<section class="section differentials" id="diferenciais">
+<section class="section differentials" id={section.id}>
   <div class="container">
     <div class="section-heading section-heading-narrow" data-reveal>
-      <h2 class="spotlight-text">Por que a <span>Ferreira Defesa</span><br />é sua melhor escolha?</h2>
+      <h2 class="spotlight-text">{section.titlePrefix} <span>{section.highlightedTitle}</span><br />{section.titleSuffix}</h2>
     </div>
 
     <div class="differentials-slider" data-differentials-slider>
       <div class="difference-stage" data-reveal aria-live="polite">
-        {slides.map((slide, index) => (
+        {section.items.map((slide, index) => (
           <article
             class:list={['featured-difference', { 'is-active': index === 0 }]}
             id={`diferencial-card-${index + 1}`}
@@ -54,16 +24,16 @@ const slides = [
             <span class="feature-mark" aria-hidden="true" data-motion-item><Icon name={slide.icon} /></span>
             <h3 data-motion-item>{slide.title}</h3>
             <p data-motion-item>{slide.description}</p>
-            <a class="card-cta" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer" data-motion-item>
-              <span>Solicitar diagnóstico criminal</span>
+            <a class="card-cta" href={contact.whatsappUrl} target="_blank" rel="noreferrer" data-motion-item>
+              <span>{section.ctaLabel}</span>
               <b aria-hidden="true"><ArrowUpRightIcon /></b>
             </a>
           </article>
         ))}
       </div>
 
-      <div class="difference-tabs" role="tablist" aria-label="Diferenciais da Ferreira Defesa" data-reveal>
-        {slides.map((slide, index) => (
+      <div class="difference-tabs" role="tablist" aria-label={section.tabsLabel} data-reveal>
+        {section.items.map((slide, index) => (
           <button
             class:list={['difference-tab', { 'is-active': index === 0 }]}
             type="button"

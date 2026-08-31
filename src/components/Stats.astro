@@ -1,15 +1,12 @@
 ---
-const stats = [
-  ['+R$22M', 'em ativos recuperados'],
-  ['+1.700', 'atos processuais realizados'],
-  ['97%', 'de avaliações positivas'],
-  ['+2.100', 'casos analisados'],
-];
+import { siteConfig } from '@/config/site';
+
+const { stats } = siteConfig;
 ---
 
-<section class="stats" id="numeros" aria-label="Resultados do escritório">
+<section class="stats" id={stats.id} aria-label={stats.label}>
   <div class="container stats-grid">
-    {stats.map(([value, label]) => (
+    {stats.items.map(({ value, label }) => (
       <article class="stat" data-reveal>
         <strong class="spotlight-text">{value}</strong>
         <span class="spotlight-text">{label}</span>
