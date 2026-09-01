@@ -153,13 +153,29 @@ deployment: {
 
 O endereço resultante será `https://eduardoferreira.feito.website`. Atualize também `seo.siteUrl` para esse endereço antes de publicar.
 
-As credenciais de publicação são globais e devem ser configuradas uma única vez no ambiente que executa os deploys — por exemplo, no terminal principal, CI ou serviço de automação. Elas não precisam ser copiadas para cada repositório:
+As credenciais de publicação são globais e devem ser configuradas uma única vez na máquina que executa os deploys. O script procura automaticamente por:
+
+```text
+C:\Users\SEU_USUARIO\Documents\tokens-para-criar-os-sites\credentials.env
+```
+
+O arquivo contém:
 
 - `VERCEL_TOKEN`: token da sua conta Vercel;
 - `CLOUDFLARE_API_TOKEN`: token com permissão para editar DNS apenas na zona necessária;
 - `CLOUDFLARE_ZONE_ID`: ID da zona `feito.website`.
 
-O arquivo `.env.automation.example` documenta somente essas credenciais globais. Para uma execução local, copie-o como `.env.automation`; em produção, prefira injetá-las pelo ambiente seguro da automação.
+Crie o arquivo global uma única vez, a partir da raiz do template:
+
+```powershell
+$feitoDirectory = Join-Path $env:USERPROFILE 'Documents\tokens-para-criar-os-sites'
+New-Item -ItemType Directory -Force -Path $feitoDirectory
+Copy-Item .env.automation.example (Join-Path $feitoDirectory 'credentials.env')
+```
+
+Depois, preencha o arquivo criado. Todos os repositórios gerados pelo template reutilizarão automaticamente essas mesmas credenciais. Não é necessário criar `.env.automation` dentro de cada projeto.
+
+Variáveis configuradas diretamente no sistema ou no CI também são aceitas e têm prioridade sobre o arquivo. Para usar outro local seguro, defina `FEITO_CREDENTIALS_FILE` com o caminho absoluto do arquivo global.
 
 `VERCEL_TEAM_ID` não é uma chave nem é obrigatório. Deixe-o vazio para publicar na conta pessoal e informe esse identificador apenas quando migrar para um time. O destino CNAME também não precisa ser fornecido: o script consulta o valor recomendado pela Vercel e usa a configuração pública do `site.ts` somente como fallback.
 
@@ -192,7 +208,7 @@ Para automatizar cada subdomínio, mantenha a zona DNS de `feito.website` na Clo
 
 O token da Cloudflare deve ser restrito à edição de DNS dessa zona. Na fase inicial, `VERCEL_TEAM_ID` vazio publica na conta pessoal. Quando houver um time, basta preencher a variável; o código e o fluxo permanecem iguais.
 
-O script pode criar e conectar o projeto automaticamente, mas não deve ser executado antes de as chaves e os dados do domínio estarem corretos. Nenhum segredo deve ser commitado.
+O script pode criar e conectar o projeto automaticamente, mas não deve ser executado antes de as chaves e os dados do domínio estarem corretos. O arquivo global fica fora dos repositórios e nunca deve ser commitado.
 
 ## SEO e descoberta por agentes de IA
 

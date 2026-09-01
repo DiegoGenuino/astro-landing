@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { constants as fsConstants } from 'node:fs';
 import { access, readFile, readdir } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { siteConfig } from '../src/config/site';
@@ -11,6 +12,8 @@ const PROJECT_ROOT = resolve(SCRIPT_DIRECTORY, '..');
 const DIST_DIRECTORY = join(PROJECT_ROOT, 'dist');
 const VERCEL_API = 'https://api.vercel.com';
 const CLOUDFLARE_API = 'https://api.cloudflare.com/client/v4';
+const GLOBAL_CREDENTIALS_FILE = process.env.FEITO_CREDENTIALS_FILE?.trim()
+  || join(homedir(), 'Documents', 'tokens-para-criar-os-sites', 'credentials.env');
 const args = new Set(process.argv.slice(2));
 const dryRun = args.has('--dry-run');
 const skipBuild = args.has('--skip-build');
@@ -68,8 +71,7 @@ const sleep = (milliseconds: number) => new Promise((resolvePromise) => {
   setTimeout(resolvePromise, milliseconds);
 });
 
-const loadEnvironmentFile = async (filename: string) => {
-  const path = join(PROJECT_ROOT, filename);
+const loadEnvironmentPath = async (path: string) => {
   let content: string;
 
   try {
@@ -95,9 +97,14 @@ const loadEnvironmentFile = async (filename: string) => {
   });
 };
 
-await loadEnvironmentFile('.env');
-await loadEnvironmentFile('.env.automation');
-await loadEnvironmentFile('.env.local');
+const loadProjectEnvironmentFile = (filename: string) =>
+  loadEnvironmentPath(join(PROJECT_ROOT, filename));
+
+await loadEnvironmentPath(GLOBAL_CREDENTIALS_FILE);
+await loadProjectEnvironmentFile('.env');
+// Compatibilidade com projetos que já utilizavam um arquivo local de automação.
+await loadProjectEnvironmentFile('.env.automation');
+await loadProjectEnvironmentFile('.env.local');
 
 const deploymentConfig = siteConfig.deployment;
 const projectName = deploymentConfig.projectName.trim();
@@ -129,7 +136,9 @@ const validateConfiguration = () => {
   if (!skipDomain && !cloudflareToken) missing.push('CLOUDFLARE_API_TOKEN');
   if (!skipDomain && !cloudflareZoneId) missing.push('CLOUDFLARE_ZONE_ID');
   if (missing.length) {
-    throw new Error(`Variáveis obrigatórias ausentes: ${missing.join(', ')}.`);
+    throw new Error(
+      `Variáveis obrigatórias ausentes: ${missing.join(', ')}. Configure-as em ${GLOBAL_CREDENTIALS_FILE} ou no ambiente do sistema.`,
+    );
   }
 };
 
@@ -430,6 +439,7 @@ const main = async () => {
     console.log(`Domínio: https://${customDomain}`);
     console.log(`Arquivos prontos para envio: ${files.length}`);
     console.log(`Escopo: ${vercelTeamId ? `time ${vercelTeamId}` : 'conta pessoal'}`);
+    console.log(`Arquivo global de credenciais: ${GLOBAL_CREDENTIALS_FILE}`);
     return;
   }
 
